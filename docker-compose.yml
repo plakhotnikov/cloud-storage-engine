@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  api:
+    container_name: cloud-storage-engine
+    build: ./
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: cloud-storage-database
+    environment:
+      - POSTGRES_USER=vova
+      - POSTGRES_PASSWORD=123
+    volumes:
+      - database_volume:/postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "vova" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  database_volume:
