@@ -15,7 +15,7 @@ public class JwtProperties {
     @Value("${jwt.refresh-secret-key}")
     private String REFRESH_SECRET_KEY;
     @Value("${jwt.access-expiration-time}")
-    private long ACCESS_EXPIRATION_TIME; // in minutes
+    private long ACCESS_EXPIRATION_TIME;
     @Value("${jwt.refresh-expiration-time}")
-    private long REFRESH_EXPIRATION_TIME; // in minutes
+    private long REFRESH_EXPIRATION_TIME;
 }

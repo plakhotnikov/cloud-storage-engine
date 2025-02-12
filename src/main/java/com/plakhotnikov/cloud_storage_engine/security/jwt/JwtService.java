@@ -1,37 +1,99 @@
 package com.plakhotnikov.cloud_storage_engine.security.jwt;
 
 import com.plakhotnikov.cloud_storage_engine.properties.JwtProperties;
+import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class JwtService {
     private final JwtProperties jwtProperties;
-//    private Key accessKey = Keys.hmacShaKeyFor(jwtProperties.getACCESS_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
-//    private Key refreshKey = Keys.hmacShaKeyFor(jwtProperties.getREFRESH_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
+    private SecretKey secretAccessKey;
+    private SecretKey secretRefreshKey;
 
-//    public String generateAccessToken(String username) {
-//        return Jwts.builder()
-//                .setSubject(username)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getACCESS_EXPIRATION_TIME() * 60000))
-//                .signWith(accessKey)
-//                .compact();
-//    }
-//    public String generateRefreshToken(String username) {
-//        return Jwts.builder()
-//                .setSubject(username)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getREFRESH_EXPIRATION_TIME() * 60000))
-//                .signWith(refreshKey)
-//                .compact();
-//    }
+    @PostConstruct
+    public void init() {
+        secretAccessKey = Keys.hmacShaKeyFor(jwtProperties.getACCESS_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
+        secretRefreshKey = Keys.hmacShaKeyFor(jwtProperties.getREFRESH_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
+    }
+    public String generateAccessToken(User user) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Instant accessExpirationInstant =
+                now.plusMinutes(jwtProperties.getACCESS_EXPIRATION_TIME())
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant();
+        final Date accessExpiration = Date.from(accessExpirationInstant);
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setExpiration(accessExpiration)
+                .signWith(secretAccessKey)
+                .claim("roles", user.getAuthorities())
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Instant refreshExpirationInstant =
+                now.plusMinutes(jwtProperties.getREFRESH_EXPIRATION_TIME())
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant();
+        final Date refreshExpiration = Date.from(refreshExpirationInstant);
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .setExpiration(refreshExpiration)
+                .signWith(secretRefreshKey)
+                .compact();
+    }
+
+    public boolean validateAccessToken(String accessToken) {
+        return validateToken(accessToken, secretAccessKey);
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        return validateToken(refreshToken, secretRefreshKey);
+    }
+
+    private boolean validateToken(String token, SecretKey secret) {
+        try {
+            Jwts
+                    .parser()
+                    .setSigningKey(secret)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        }
+        catch (Exception e){
+            throw new JwtException(e.getMessage());
+        }
+    }
+
+    public String getUsernameFromAccessClaims(String token) {
+        return getClaims(token, secretAccessKey).getSubject();
+    }
+
+    public String getUsernameFromRefreshClaims(String token) {
+        return getClaims(token, secretRefreshKey).getSubject();
+    }
+
+    private Claims getClaims(String token, SecretKey secret) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }

@@ -1,8 +1,7 @@
-package com.plakhotnikov.cloud_storage_engine.security;
+package com.plakhotnikov.cloud_storage_engine.security.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -12,13 +11,15 @@ import java.util.List;
 @Table(name = "users")
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String username;
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -30,4 +31,9 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> authorities = new ArrayList<>();
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }

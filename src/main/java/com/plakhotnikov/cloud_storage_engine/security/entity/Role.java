@@ -1,4 +1,4 @@
-package com.plakhotnikov.cloud_storage_engine.security;
+package com.plakhotnikov.cloud_storage_engine.security.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

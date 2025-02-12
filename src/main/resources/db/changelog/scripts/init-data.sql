@@ -7,8 +7,8 @@ values ('ADMIN'),
 
 
 begin;
-INSERT INTO users(username, password)
-VALUES ('ADMIN', '{bcrypt}$2a$10$tHwHP4coM61zxJz4QrFUqOoWNVUFRuDBtAEdTmikMca9J4vLgrdqG');
+INSERT INTO users(email, password)
+VALUES ('abc@abc.ru', '$2a$10$tHO8b6s9TzJQEt7oMFuUW.KnEVQS.SfhGgOQASTwIxkgzKS/0GmP6');
 INSERT INTO user_roles(user_id, role_id)
 VALUES (1, 2),
        (1, 1);
