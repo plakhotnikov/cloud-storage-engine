@@ -17,6 +17,9 @@
             <column name="password" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="last_reset_time" type="timestamp" defaultValueComputed="now()">
+                <constraints nullable="false" />
+            </column>
         </createTable>
     </changeSet>
 

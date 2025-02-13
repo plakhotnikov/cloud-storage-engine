@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    username: vova
+    password: 123
+    url: jdbc:postgresql://postgres:5432/postgres
+#    url: jdbc:postgresql://localhost:5432/postgres # для локального запуска
+    driver-class-name: org.postgresql.Driver
+  data:
+    jdbc:
+      dialect: postgresql
+    redis:
+      host: redis
+#      host: localhost # для локального запуска
+      port: 6379
+      password:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+
+jwt:
+  access-secret-key: "super_secret_key_which_should_be_long"
+  refresh-secret-key: "also_super_secret_key_which_should_be_long"
+  access-expiration-time: 60
+  refresh-expiration-time: 10080

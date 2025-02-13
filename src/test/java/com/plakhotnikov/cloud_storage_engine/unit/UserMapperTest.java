@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
@@ -20,7 +21,7 @@ public class UserMapperTest {
 
     @Test
     void mappingToUserResponseDto() {
-        User user = new User(1L, "username","password", List.of(new Role(1L, "USER")));
+        User user = new User(1L, "username","password", LocalDateTime.now(), List.of(new Role(1L, "USER")));
         UserResponseDto userResponseDto = userMapper.userToUserResponseDto(user);
         assertAll(
                 () -> assertEquals(user.getUsername(), userResponseDto.getEmail()),

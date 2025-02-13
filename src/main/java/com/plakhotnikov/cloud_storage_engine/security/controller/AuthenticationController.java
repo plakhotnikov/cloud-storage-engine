@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
-    private final VerificationService verificationService;
+    private final UserService userService;
+    private final TokenService tokenService;
     private final EmailService emailService;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordRecoveryService passwordRecoveryService;
 
     @PostMapping("/login")
     public UserResponseDto login(@RequestBody UserLoginDto loginDto) {
@@ -27,20 +28,21 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public UserResponseDto registration(@RequestBody UserRegistrationDto registrationDto) {
-        UserResponseDto userResponseDto = authenticationService.registration(registrationDto);
-        emailService.sendVerificationEmail(userResponseDto.getEmail(), verificationService.generateVerifyToken(userResponseDto.getEmail()));
+        UserResponseDto userResponseDto = userService.registration(registrationDto);
+        emailService.sendVerificationEmail(userResponseDto.getEmail(), tokenService.generateVerifyToken(userResponseDto.getEmail()));
         return userResponseDto;
     }
 
     @PostMapping("/refresh")
     public UserResponseDto refresh(HttpServletRequest request) {
-        return authenticationService.refreshToken(request);
+        return authenticationService.refreshToken(request.getHeader("Authorization"));
     }
 
     @GetMapping("send-verification-email")
     public ResponseEntity<?> sendVerificationEmail(@RequestParam String email) {
-        if (customUserDetailsService.loadUserByUsername(email).getAuthorities().isEmpty()) {
-            emailService.sendVerificationEmail(email, verificationService.generateVerifyToken(email));
+
+        if (userService.findByEmail(email).getRoles().isEmpty()) {
+            emailService.sendVerificationEmail(email, tokenService.generateVerifyToken(email));
             return ResponseEntity.ok().build();
         }
         throw new UsernameNotFoundException(email);
@@ -48,21 +50,23 @@ public class AuthenticationController {
 
     @GetMapping("/verify-email")
     public UserResponseDto verifyEmail(@RequestParam String token) {
-        return verificationService.verifyEmail(token);
+        return userService.verifyEmail(token);
     }
 
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody String email) {
-        customUserDetailsService.loadUserByUsername(email);
-        emailService.sendResetPasswordEmail(email, verificationService.generateResetPasswordToken(email));
-        return ResponseEntity.ok().build();
+        if (userService.existsByEmail(email)) {
+            emailService.sendResetPasswordEmail(email, tokenService.generateResetPasswordToken(email));
+            return ResponseEntity.ok().build();
+        }
+        throw new UsernameNotFoundException(email);
     }
 
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
-        authenticationService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword());
+        passwordRecoveryService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword());
         return ResponseEntity.ok().build();
     }
 

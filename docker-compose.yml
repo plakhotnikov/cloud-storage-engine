@@ -4,9 +4,11 @@ services:
   api:
     container_name: cloud-storage-engine
     build: ./
-#    image: test:1
+    environment:
+      EMAIL: put here your email
+      EMAIL_PASSWORD: put here app password for your email
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -18,8 +20,6 @@ services:
     image: postgres:latest
     restart: always
     container_name: cloud-storage-database
-#    ports:
-#      - 5432:5432
     environment:
       - POSTGRES_USER=vova
       - POSTGRES_PASSWORD=123
@@ -35,10 +35,7 @@ services:
     image: redis:latest
     restart: always
     container_name: cloud-storage-redis
-#    ports:
-#      - 6379:6379
-#    volumes:
-#TODO
+#TODO volumes
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s

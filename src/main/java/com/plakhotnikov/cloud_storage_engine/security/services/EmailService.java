@@ -18,7 +18,7 @@ public class EmailService {
 //        String confirmationUrl = "http://localhost:8080/auth/reset-password" + token;
         String content = "<p>Здравствуйте,</p>"
                 + "<p>token= " + token + "</p>";
-
+// TODO: 12.02.2025 ссылку на get и затем там button на post 
         sendHtmlEmail(to, subject, content);
     }
 

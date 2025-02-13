@@ -39,6 +39,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .setExpiration(accessExpiration)
+                .setIssuedAt(new Date())
                 .signWith(secretAccessKey)
                 .claim("roles", user.getAuthorities())
                 .compact();
@@ -53,6 +54,7 @@ public class JwtService {
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
                 .setSubject(user.getUsername())
+                .setIssuedAt(new Date())
                 .setExpiration(refreshExpiration)
                 .signWith(secretRefreshKey)
                 .compact();
@@ -84,8 +86,18 @@ public class JwtService {
         return getClaims(token, secretAccessKey).getSubject();
     }
 
+    public LocalDateTime getIssuedAtFromAccessClaims(String token) {
+//        LocalDateTime date = getClaims(token, secretRefreshKey)
+        return getClaims(token, secretAccessKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+
     public String getUsernameFromRefreshClaims(String token) {
         return getClaims(token, secretRefreshKey).getSubject();
+    }
+
+    public LocalDateTime getIssuedAtFromRefreshClaims(String token) {
+        return getClaims(token, secretRefreshKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     private Claims getClaims(String token, SecretKey secret) {

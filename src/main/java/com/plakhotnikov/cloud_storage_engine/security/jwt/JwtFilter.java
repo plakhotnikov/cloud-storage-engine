@@ -1,6 +1,8 @@
 package com.plakhotnikov.cloud_storage_engine.security.jwt;
 
+import com.plakhotnikov.cloud_storage_engine.security.entity.User;
 import com.plakhotnikov.cloud_storage_engine.security.services.CustomUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,11 +39,14 @@ public class JwtFilter extends OncePerRequestFilter {
             String accessToken = getTokenFromRequest(request);
             if (accessToken != null && jwtService.validateAccessToken(accessToken)) {
                 var userEmail = jwtService.getUsernameFromAccessClaims(accessToken);
-                var userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+                User user = (User) customUserDetailsService.loadUserByUsername(userEmail);
+                if (user.getLastResetTime().isAfter(jwtService.getIssuedAtFromAccessClaims(accessToken))) {
+                    throw new JwtException("password changed");
+                }
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails.getUsername(),
+                        user.getUsername(),
                         null,
-                        userDetails.getAuthorities()
+                        user.getAuthorities()
                 );
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
