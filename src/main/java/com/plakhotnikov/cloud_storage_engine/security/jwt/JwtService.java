@@ -29,6 +29,11 @@ public class JwtService {
         secretAccessKey = Keys.hmacShaKeyFor(jwtProperties.getACCESS_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
         secretRefreshKey = Keys.hmacShaKeyFor(jwtProperties.getREFRESH_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
     }
+
+    /**
+     * @param user
+     * @return generated access token
+     */
     public String generateAccessToken(User user) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessExpirationInstant =
@@ -45,6 +50,10 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * @param user
+     * @return generated refresh token
+     */
     public String generateRefreshToken(User user) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant =
@@ -60,14 +69,28 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * @param accessToken
+     * @return is accessToken valid
+     */
     public boolean validateAccessToken(String accessToken) {
         return validateToken(accessToken, secretAccessKey);
     }
 
+    /**
+     * @param refreshToken
+     * @return is refreshToken valid
+     */
     public boolean validateRefreshToken(String refreshToken) {
         return validateToken(refreshToken, secretRefreshKey);
     }
 
+
+    /**
+     * @param token
+     * @param secret
+     * @return is token valid with this key
+     */
     private boolean validateToken(String token, SecretKey secret) {
         try {
             Jwts
@@ -82,24 +105,45 @@ public class JwtService {
         }
     }
 
+    /**
+     * @param token
+     * @return username
+     */
     public String getUsernameFromAccessClaims(String token) {
         return getClaims(token, secretAccessKey).getSubject();
     }
 
+
+    /**
+     * @param token
+     * @return issuedAt
+     */
     public LocalDateTime getIssuedAtFromAccessClaims(String token) {
-//        LocalDateTime date = getClaims(token, secretRefreshKey)
         return getClaims(token, secretAccessKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
 
+    /**
+     * @param token
+     * @return username
+     */
     public String getUsernameFromRefreshClaims(String token) {
         return getClaims(token, secretRefreshKey).getSubject();
     }
 
+    /**
+     * @param token
+     * @return issuedAt
+     */
     public LocalDateTime getIssuedAtFromRefreshClaims(String token) {
         return getClaims(token, secretRefreshKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
+    /**
+     * @param token
+     * @param secret
+     * @return claims
+     */
     private Claims getClaims(String token, SecretKey secret) {
         return Jwts.parser()
                 .setSigningKey(secret)

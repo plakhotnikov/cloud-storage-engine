@@ -21,11 +21,20 @@ public class AuthenticationController {
     private final EmailService emailService;
     private final PasswordRecoveryService passwordRecoveryService;
 
+    /**
+     * @param loginDto
+     * @return userResponseDto with access, refresh tokens and list of authorities
+     */
     @PostMapping("/login")
     public UserResponseDto login(@RequestBody UserLoginDto loginDto) {
         return authenticationService.login(loginDto);
     }
 
+    /**
+     * @param registrationDto
+     * @action send you verify email message
+     * @return userResponseDto which contains username
+     */
     @PostMapping("/registration")
     public UserResponseDto registration(@RequestBody UserRegistrationDto registrationDto) {
         UserResponseDto userResponseDto = userService.registration(registrationDto);
@@ -33,27 +42,43 @@ public class AuthenticationController {
         return userResponseDto;
     }
 
+
+    /**
+     * @param request
+     * @return UserResponseDto with new access and refresh tokens
+     */
     @PostMapping("/refresh")
     public UserResponseDto refresh(HttpServletRequest request) {
         return authenticationService.refreshToken(request.getHeader("Authorization"));
     }
 
+    /**
+     * @param email
+     * @action send you email verify message if your account isn't verified
+     */
     @GetMapping("send-verification-email")
     public ResponseEntity<?> sendVerificationEmail(@RequestParam String email) {
-
-        if (userService.findByEmail(email).getRoles().isEmpty()) {
+        if (!userService.isVerified(email)) {
             emailService.sendVerificationEmail(email, tokenService.generateVerifyToken(email));
             return ResponseEntity.ok().build();
         }
         throw new UsernameNotFoundException(email);
     }
 
+    /**
+     * @param token
+     * @return UserResponseDto with a list of authorities, which given while verification
+     */
     @GetMapping("/verify-email")
     public UserResponseDto verifyEmail(@RequestParam String token) {
         return userService.verifyEmail(token);
     }
 
 
+    /**
+     * @param email
+     * @action Send to your email reset password message
+     */
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody String email) {
         if (userService.existsByEmail(email)) {
@@ -64,6 +89,10 @@ public class AuthenticationController {
     }
 
 
+    /**
+     * @param resetPasswordDto
+     * Reset password using reset-password-token which you can get in func forgotPassword
+     */
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         passwordRecoveryService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword());

@@ -17,6 +17,11 @@ public class PasswordRecoveryService {
     private final PasswordEncoder passwordEncoder;
 
 
+    /** Reset password in database
+     *
+     * @param token
+     * @param password
+     */
     @Transactional
     public void resetPassword(String token, String password) {
         if (!token.startsWith("RP:")) {

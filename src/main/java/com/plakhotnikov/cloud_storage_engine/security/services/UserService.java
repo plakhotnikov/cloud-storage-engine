@@ -6,6 +6,7 @@ import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
 import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.exception.ResourceNotFoundException;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.transaction.Transactional;
@@ -28,7 +29,7 @@ public class UserService {
     private final TokenService tokenService;
     private final RoleRepository roleRepository;
 
-
+    // TODO: 15.02.2025 JAVADOC 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
@@ -40,13 +41,6 @@ public class UserService {
 
     @Transactional
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
-        try {
-            InternetAddress emailAddr = new InternetAddress(userRegistrationDto.getEmail());
-            emailAddr.validate();
-        } catch (AddressException e) {
-            throw new RuntimeException(e);
-        }
-        userRegistrationDto.setEmail(userRegistrationDto.getEmail().toLowerCase());
         User userToSave = userMapper.registrationDtoToUser(userRegistrationDto);
         userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
         userToSave.setLastResetTime(LocalDateTime.now());
@@ -75,5 +69,10 @@ public class UserService {
         )));
         tokenService.deleteToken(token);
         return userMapper.userToUserResponseDto(user);
+    }
+
+    public boolean isVerified(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return !user.getAuthorities().isEmpty();
     }
 }

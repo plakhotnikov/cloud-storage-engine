@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: cloud-storage-engine
   datasource:
     username: vova
     password: 123
@@ -16,6 +18,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    open-in-view: false
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
   mail:

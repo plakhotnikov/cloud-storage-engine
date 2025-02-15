@@ -1,5 +1,6 @@
 package com.plakhotnikov.cloud_storage_engine.security.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class UserResponseDto {
+    @Email
     private String email;
     private List<String> roles;
     private String accessToken;

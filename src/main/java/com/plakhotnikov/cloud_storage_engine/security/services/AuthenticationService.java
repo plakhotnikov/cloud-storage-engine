@@ -26,8 +26,11 @@ public class AuthenticationService {
     private final UserMapper userMapper;
 
 
+    /**
+     * @param userLoginDto
+     * @return UserResponseDto which contains a list of authorities, access and refresh tokens
+     */
     public UserResponseDto login(@RequestParam UserLoginDto userLoginDto) {
-        userLoginDto.setEmail(userLoginDto.getEmail().toLowerCase());
         try {
             User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email " + userLoginDto.getEmail() + " not found"));
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword()));
@@ -44,6 +47,10 @@ public class AuthenticationService {
     }
 
 
+    /**
+     * @param header
+     * @return UserResponseDto which contains a list of authorities, access and refresh tokens
+     */
     public UserResponseDto refreshToken(String header) {
         if (header == null || !header.startsWith("Bearer ")) {
             throw new BadCredentialsException("Invalid token");

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE) // игнор
     User loginDtoToUser(UserLoginDto loginDto);
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
     User registrationDtoToUser(UserRegistrationDto registrationDto);

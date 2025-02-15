@@ -10,9 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    // TODO: 11.02.2025 не хардкодить адрес, задавать из property 
+    // TODO: 11.02.2025 не хардкодить адрес, задавать из property
     private final JavaMailSender mailSender;
 
+    /**
+     * send email message with link for password-change page
+     *
+     * @param to
+     * @param token
+     */
     public void sendResetPasswordEmail(String to, String token) {
         String subject = "Смена пароля";
 //        String confirmationUrl = "http://localhost:8080/auth/reset-password" + token;
@@ -22,6 +28,12 @@ public class EmailService {
         sendHtmlEmail(to, subject, content);
     }
 
+    /**
+     * send email message with link for email verify page
+     *
+     * @param to
+     * @param token
+     */
     public void sendVerificationEmail(String to, String token) {
         String subject = "Подтверждение регистрации";
         String confirmationUrl = "http://localhost:8080/auth/verify-email?token=" + token;
@@ -31,6 +43,15 @@ public class EmailService {
 
         sendHtmlEmail(to, subject, content);
     }
+
+
+    /**
+     * Send email message
+     *
+     * @param to
+     * @param subject
+     * @param content
+     */
     private void sendHtmlEmail(String to, String subject, String content) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
