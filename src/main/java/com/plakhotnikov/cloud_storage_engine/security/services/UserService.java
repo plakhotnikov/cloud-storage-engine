@@ -39,6 +39,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found")));
     }
 
+
     @Transactional
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
         User userToSave = userMapper.registrationDtoToUser(userRegistrationDto);

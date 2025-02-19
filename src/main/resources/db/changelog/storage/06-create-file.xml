@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="6" author="plakhotnikov">
+        <sql>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</sql>
+        <createTable tableName="file">
+            <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="filename" type="TEXT"/>
+            <column name="extension" type="VARCHAR(16)"/>
+            <column name="check_sum" type="TEXT"/>
+            <column name="directory_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="file"
+                                 baseColumnNames="directory_id"
+                                 constraintName="fk_file_directory_id"
+                                 referencedTableName="directory"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

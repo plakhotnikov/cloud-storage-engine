@@ -1,5 +1,6 @@
 package com.plakhotnikov.cloud_storage_engine.security.entity;
 
+import com.plakhotnikov.cloud_storage_engine.storage.entity.Directory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -37,6 +38,9 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> authorities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    private List<Directory> directories;
 
     @Override
     public String getUsername() {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="5" author="plakhotnikov">
+        <createTable tableName="directory">
+            <column name="id" type="BIGSERIAL">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="TEXT"/>
+            <column name="root_directory_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="directory"
+                                 baseColumnNames="root_directory_id"
+                                 constraintName="fk_directory_root_directory_id"
+                                 referencedTableName="directory"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="directory"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_directory_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
