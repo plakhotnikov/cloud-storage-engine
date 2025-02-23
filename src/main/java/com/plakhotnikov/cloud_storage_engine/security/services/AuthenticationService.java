@@ -25,10 +25,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
 
-
     /**
-     * @param userLoginDto
-     * @return UserResponseDto which contains a list of authorities, access and refresh tokens
+     * @param userLoginDto // todo не заполнил
+     * @return дто для логина {@link UserLoginDto}
      */
     public UserResponseDto login(@RequestParam UserLoginDto userLoginDto) {
         try {

@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .userDetailsService(userDetailsService)
@@ -41,9 +41,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

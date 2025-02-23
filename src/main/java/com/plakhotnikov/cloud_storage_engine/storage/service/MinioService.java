@@ -17,10 +17,11 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 public class MinioService {
     private final MinioClient minioClient;
+
     @Value("#{minioProperties.getBucketName()}")
     private String bucketName;
 
-    @PostConstruct
+    @PostConstruct // todo вынести в конфиг
     public void init() {
         try {
             if (!minioClient.bucketExists(
@@ -48,11 +49,8 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new DownloadException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DownloadException(e.getMessage());
         }
     }
 
@@ -65,11 +63,8 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new DeleteFileException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DeleteFileException(e.getMessage());
         }
     }
 
@@ -84,11 +79,8 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new UploadFileException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UploadFileException(e.getMessage());
         }
     }
 }

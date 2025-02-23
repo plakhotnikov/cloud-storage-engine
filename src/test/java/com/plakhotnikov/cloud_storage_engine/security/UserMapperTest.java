@@ -28,7 +28,7 @@ public class UserMapperTest {
                 () -> assertNull(userResponseDto.getAccessToken()),
                 () -> assertNull(userResponseDto.getRefreshToken()),
                 () -> assertEquals(user.getAuthorities().size(), userResponseDto.getRoles().size()),
-                () -> assertEquals(user.getAuthorities().get(0).getAuthority(), userResponseDto.getRoles().get(0))
+                () -> assertEquals(user.getAuthorities().getFirst().getAuthority(), userResponseDto.getRoles().getFirst())
         );
     }
 

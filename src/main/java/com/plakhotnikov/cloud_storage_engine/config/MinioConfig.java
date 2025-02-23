@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Getter
-@ToString
 @RequiredArgsConstructor
 public class MinioConfig {
     private final MinioProperties minioProperties;
+
     @Bean
-    MinioClient minioClient() {
+    public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(minioProperties.getEndpoint())
                 .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())

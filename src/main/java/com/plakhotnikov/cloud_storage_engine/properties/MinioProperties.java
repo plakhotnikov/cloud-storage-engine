@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class MinioProperties {
+
     @Value("${minio.endpoint}")
     private String endpoint;
 

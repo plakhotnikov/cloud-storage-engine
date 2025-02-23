@@ -18,9 +18,9 @@ public class CachedUserService {
     private final ObjectMapper objectMapper;
 
 
-    Optional<User> loadUserByUsername(String email) {
+    public Optional<User> loadUserByUsername(String email) {
         String key = USER_PREFIX + email;
-        String userJson = (String) redisTemplate.opsForValue().get(key);
+        String userJson = (String) redisTemplate.opsForValue().get(key); //todo вынести в репозиторий
         if (userJson != null) {
             try {
                 return Optional.ofNullable(objectMapper.readValue(userJson, User.class));

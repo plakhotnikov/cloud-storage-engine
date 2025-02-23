@@ -47,7 +47,7 @@ public class TokenService {
      * @param token
      */
     public void deleteToken(String token) {
-        redisTemplate.delete(token);
+        redisTemplate.delete(token); // todo не вынесено в репозиторий, создай RedisRepository
     }
 
 

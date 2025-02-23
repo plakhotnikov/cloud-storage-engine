@@ -13,7 +13,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper(); // todo inject from JacksonConfig
         objectMapper.registerModule(new JavaTimeModule());
 
 
