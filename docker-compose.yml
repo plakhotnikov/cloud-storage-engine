@@ -14,6 +14,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      minio:
+        condition: service_started
 
 
   postgres:
@@ -42,6 +44,19 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+  minio:
+    image: minio/minio
+    restart: always
+    container_name: cloud-storage-s3
+    #TODO volumes
+    command: server /data
+#    healthcheck:
+#      test: [ "CMD", "mc", "alias", "set", "myminio", "http://localhost:9000", "your-access-key", "your-secret-key" ]
+#      interval: 30s
+#      retries: 3
+#      start_period: 10s
+#      timeout: 10s
 
 volumes:
   database_volume:

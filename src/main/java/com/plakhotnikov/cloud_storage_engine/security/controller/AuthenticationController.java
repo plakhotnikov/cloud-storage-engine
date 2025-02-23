@@ -97,6 +97,7 @@ public class AuthenticationController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         passwordRecoveryService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getNewPassword());
         return ResponseEntity.ok().build();
+
     }
 
 

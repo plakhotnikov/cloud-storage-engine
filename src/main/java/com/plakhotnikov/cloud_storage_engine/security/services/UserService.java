@@ -5,10 +5,9 @@ import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
+import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
 import com.plakhotnikov.cloud_storage_engine.security.entity.User;
-import com.plakhotnikov.cloud_storage_engine.security.exception.ResourceNotFoundException;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
+import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,18 +27,28 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final RoleRepository roleRepository;
+    private final CachedUserService cachedUserService;
 
-    // TODO: 15.02.2025 JAVADOC 
+    /**
+     * Checks if user exist
+     */
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    /**
+     * @return UserResponseDto of User with param email
+     */
     public UserResponseDto findByEmail(String email) {
         return  userMapper.userToUserResponseDto(userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found")));
     }
 
 
+    /**
+     * @param userRegistrationDto which contains email and password
+     * @return UserResponseDto with info about user
+     */
     @Transactional
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
         User userToSave = userMapper.registrationDtoToUser(userRegistrationDto);
@@ -54,6 +63,9 @@ public class UserService {
         return userMapper.userToUserResponseDto(userToSave);
     }
 
+    /**
+     * If token is valid, gives to user role "USER"
+     */
     @Transactional
     public UserResponseDto verifyEmail(String token) {
         if (!token.startsWith("V:")) {
@@ -65,13 +77,18 @@ public class UserService {
             throw new UsernameNotFoundException("User with email " + email + " is already verified");
         }
 
-        user.setAuthorities(List.of(roleRepository.findByRole("USER").orElseThrow(
+        user.setAuthorities(List.of(roleRepository.findByRole(RoleEnum.USER).orElseThrow(
                 () -> new RuntimeException("Role USER not found")
         )));
         tokenService.deleteToken(token);
+
+        cachedUserService.deleteUser(email);
         return userMapper.userToUserResponseDto(user);
     }
 
+    /**
+     * @return check if user is verified
+     */
     public boolean isVerified(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return !user.getAuthorities().isEmpty();

@@ -1,10 +1,11 @@
-package com.plakhotnikov.cloud_storage_engine.unit;
+package com.plakhotnikov.cloud_storage_engine.security;
 
 import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserLoginDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
 import com.plakhotnikov.cloud_storage_engine.security.entity.Role;
+import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
 import com.plakhotnikov.cloud_storage_engine.security.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class UserMapperTest {
 
     @Test
     void mappingToUserResponseDto() {
-        User user = new User(1L, "username","password", LocalDateTime.now(), List.of(new Role(1L, "USER")));
+        User user = new User(1L, "username","password", LocalDateTime.now(), List.of(new Role(1L, RoleEnum.USER)), List.of());
         UserResponseDto userResponseDto = userMapper.userToUserResponseDto(user);
         assertAll(
                 () -> assertEquals(user.getUsername(), userResponseDto.getEmail()),

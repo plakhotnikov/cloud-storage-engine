@@ -31,7 +31,6 @@ public class JwtService {
     }
 
     /**
-     * @param user
      * @return generated access token
      */
     public String generateAccessToken(User user) {

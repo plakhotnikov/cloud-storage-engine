@@ -15,6 +15,7 @@ public class PasswordRecoveryService {
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CachedUserService cachedUserService;
 
 
     /** Reset password in database
@@ -30,9 +31,9 @@ public class PasswordRecoveryService {
         String email = tokenService.getEmailByToken(token);
         userRepository.findByEmail(email).ifPresent(user -> {
             user.setPassword(passwordEncoder.encode(password));
-            user.setLastResetTime(LocalDateTime.now());
             userRepository.save(user);
             tokenService.deleteToken(token);
         });
+        cachedUserService.deleteUser(email);
     }
 }

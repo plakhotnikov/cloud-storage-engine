@@ -1,9 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.storage.entity;
 
-import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.CreateDirectoryDto;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.DirectoryDto;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.FileDto;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.SubDirectoryDto;
+import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.*;
+import lombok.ToString;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -11,14 +9,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface StorageMapper {
 
-    Directory CreateDirToEntity(CreateDirectoryDto createDirectoryDto);
-
-    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
     FileDto fileToDto(File file);
 
-//    @Mapping(target = "children", ignore = true) // Отключаем рекурсию
-//    @Mapping(target = "files", ignore = true) // Отключаем рекурсию
-    @Mapping(target = "children", source = "children", qualifiedByName = "mapSubDir")
+    @Mapping(source = "children", target = "children", qualifiedByName = "mapSubDir")
     @Mapping(source = "files", target = "files", qualifiedByName = "mapFile")
     DirectoryDto dirToDto(Directory directory);
 

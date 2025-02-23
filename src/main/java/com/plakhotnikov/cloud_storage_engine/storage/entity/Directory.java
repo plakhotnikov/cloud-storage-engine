@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @ToString
 @AllArgsConstructor
+
 public class Directory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,7 @@ public class Directory {
 
     @JsonIgnore
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
 

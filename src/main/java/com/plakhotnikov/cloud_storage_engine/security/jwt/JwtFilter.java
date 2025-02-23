@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String accessToken = getTokenFromRequest(request);
             if (accessToken != null && jwtService.validateAccessToken(accessToken)) {
                 var userEmail = jwtService.getUsernameFromAccessClaims(accessToken);
-                User user = (User) customUserDetailsService.loadUserByUsername(userEmail);
+                User user = (User) customUserDetailsService.loadUserByUsername(userEmail); // todo подумай как здесь использовать редис
                 if (user.getLastResetTime().isAfter(jwtService.getIssuedAtFromAccessClaims(accessToken))) {
                     throw new JwtException("password changed");
                 }

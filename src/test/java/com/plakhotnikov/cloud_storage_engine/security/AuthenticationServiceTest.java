@@ -1,4 +1,4 @@
-package com.plakhotnikov.cloud_storage_engine.unit;
+package com.plakhotnikov.cloud_storage_engine.security;
 
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserLoginDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class AuthenticationServiceTest {
+
     @Autowired
     private AuthenticationService authenticationService;
 
@@ -27,6 +28,7 @@ public class AuthenticationServiceTest {
             .withDatabaseName("test_db")
             .withUsername("test_user")
             .withPassword("password");
+    //вынесли в aplication-test.yml
 
     @BeforeAll
     static void startContainer() {
@@ -50,7 +52,7 @@ public class AuthenticationServiceTest {
     @Test
     void loginTest() {
         UserResponseDto user = authenticationService.login(new UserLoginDto(
-                "abc@aBc.ru", "123"
+                "abc@abc.ru", "123" //вынести в @DataProperties
         ));
         assertNotNull(user.getRefreshToken());
         assertFalse(user.getRefreshToken().isEmpty());
@@ -59,21 +61,21 @@ public class AuthenticationServiceTest {
     @Test
     void failureLoginWrongPassword() {
         assertThrows(BadCredentialsException.class, () -> authenticationService.login(new UserLoginDto(
-                "abc@aBc.ru", "312"
+                "abc@abc.ru", "312"
         )));
     }
 
     @Test
     void failureLoginWrongLogin() {
-        assertThrows(UsernameNotFoundException.class, () -> authenticationService.login(new UserLoginDto(
-                "abc@aBsdc.ru", "312"
+        assertThrows(BadCredentialsException.class, () -> authenticationService.login(new UserLoginDto(
+                "abc@absdc.ru", "312"
         )));
     }
 
     @Test
     void refreshTokenTest() {
         UserResponseDto user = authenticationService.login(new UserLoginDto(
-                "abc@aBc.ru", "123"
+                "abc@abc.ru", "123"
         ));
         String refreshToken = "Bearer " + user.getRefreshToken();
         UserResponseDto newUser = authenticationService.refreshToken(refreshToken);

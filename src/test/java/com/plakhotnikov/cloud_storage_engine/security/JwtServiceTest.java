@@ -1,6 +1,7 @@
-package com.plakhotnikov.cloud_storage_engine.unit;
+package com.plakhotnikov.cloud_storage_engine.security;
 
 import com.plakhotnikov.cloud_storage_engine.security.entity.Role;
+import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
 import com.plakhotnikov.cloud_storage_engine.security.entity.User;
 import com.plakhotnikov.cloud_storage_engine.security.jwt.JwtService;
 import io.jsonwebtoken.JwtException;
@@ -20,7 +21,7 @@ public class JwtServiceTest {
     @Test
     public void accessTokenTest() {
         String token = jwtService.generateAccessToken(
-                new User(1L,"abc@abc.ru", "123", LocalDateTime.now(), List.of(new Role(1L, "ADMIN"), new Role(2L, "USER")))
+                new User(1L,"abc@abc.ru", "123", LocalDateTime.now(), List.of(new Role(1L, RoleEnum.ADMIN), new Role(2L, RoleEnum.USER)), List.of())
         );
         assertAll(
                 () -> assertTrue(jwtService.validateAccessToken(token)),
@@ -32,7 +33,7 @@ public class JwtServiceTest {
     @Test
     public void refreshTokenTest() {
         String token = jwtService.generateRefreshToken(
-                new User(1L,"abc@abc.ru", "123", LocalDateTime.now(), List.of(new Role(1L, "ADMIN"), new Role(2L, "USER")))
+                new User(1L,"abc@abc.ru", "123", LocalDateTime.now(), List.of(new Role(1L, RoleEnum.ADMIN), new Role(2L, RoleEnum.USER)), List.of())
         );
         assertAll(
                 () -> assertTrue(jwtService.validateRefreshToken(token)),

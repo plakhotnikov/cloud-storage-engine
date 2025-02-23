@@ -32,10 +32,9 @@ public class AuthenticationService {
      */
     public UserResponseDto login(@RequestParam UserLoginDto userLoginDto) {
         try {
-            User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("Email " + userLoginDto.getEmail() + " not found"));
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(auth);
-
+            User user = (User) auth.getPrincipal();
             UserResponseDto result = userMapper.userToUserResponseDto(user);
             result.setRefreshToken(jwtService.generateRefreshToken(user));
             result.setAccessToken(jwtService.generateAccessToken(user));

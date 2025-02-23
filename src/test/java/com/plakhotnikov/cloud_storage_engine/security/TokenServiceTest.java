@@ -1,4 +1,4 @@
-package com.plakhotnikov.cloud_storage_engine.unit;
+package com.plakhotnikov.cloud_storage_engine.security;
 
 import com.plakhotnikov.cloud_storage_engine.security.services.TokenService;
 import org.junit.jupiter.api.Test;
