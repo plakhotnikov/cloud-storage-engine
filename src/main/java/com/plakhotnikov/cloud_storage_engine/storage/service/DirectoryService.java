@@ -29,7 +29,7 @@ public class DirectoryService {
         if (createDirectoryDto.getParentDirectoryId() == null) {
             Directory directory = Directory.builder()
                     .name(createDirectoryDto.getName())
-                    .owner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                    .owner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()) //todo на абстракный контроллер, который вытгивает пользователя из контекста и передаёт его в параметры
                             .orElseThrow(() -> new ResourceNotFoundException("User with this email doesn't exist")))
                     .children(List.of())
                     .files(List.of())
@@ -55,12 +55,12 @@ public class DirectoryService {
         );
 
         directory.getChildren().add(subdirectory);
-        directoryRepository.save(directory);
+        directoryRepository.save(directory); // todo можешь поиграться с CascadeType = Persist  убрать второй сейв
         return storageMapper.dirToDto(subdirectory);
     }
 
     @Transactional
-    public DirectoryDto getDirectory(Long id) {
+    public DirectoryDto getDirectory(Long id) { // getDirectoryById
         if (id == 0) {
             DirectoryDto directoryDto = new DirectoryDto();
             directoryDto.setName("root");
@@ -75,7 +75,7 @@ public class DirectoryService {
 
 
     @Transactional
-    public boolean isUserOwner(Long directoryId) {
+    public boolean isUserOwner(Long directoryId) { //todo нейминг
         if (directoryId == 0) {
             return true;
         }

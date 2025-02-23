@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
@@ -68,8 +69,8 @@ public class MinioService {
         }
     }
 
-    public void upload(String objectName, InputStream inputStream) {
-        try {
+    public void upload(String objectName, MultipartFile file) {
+        try(InputStream inputStream = file.getInputStream()) {
              minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)

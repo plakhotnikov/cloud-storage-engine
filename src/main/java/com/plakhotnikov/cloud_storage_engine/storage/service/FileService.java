@@ -30,7 +30,7 @@ public class FileService {
     public FileDto upload(MultipartFile fileToUpload, Long directoryId) {
         Directory directory = directoryRepository.findById(directoryId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Directory with id '%s' not found", directoryId)));
-        File file = new File();
+        File file = new File(); //todo builder
         file.setDirectory(directory);
         if (fileToUpload.getOriginalFilename() == null) {
             throw new ResourceNotFoundException("File not uploaded");
@@ -41,17 +41,13 @@ public class FileService {
         file.setExtension(fileNameAndExtension.get(1));
         //TODO checksum
         file = fileRepository.save(file);
-        try {
-            minioService.upload(file.getId().toString(), fileToUpload.getInputStream());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
+        minioService.upload(file.getId().toString(), fileToUpload);
 
         return storageMapper.fileToDto(file);
     }
 
-    @Transactional
+    @Transactional // не нужна транзакция
     public void deleteFile(UUID fileId) {
         if (fileRepository.existsById(fileId)) {
             minioService.deleteFile(fileId.toString());
@@ -63,17 +59,16 @@ public class FileService {
     }
 
     public InputStream downloadFile(UUID fileId) {
-
         return minioService.download(fileId.toString());
     }
 
-    private List<String> separateFileName(String fileName) {
+    private List<String> separateFileName(String fileName) { //todo вынести в Util class
         int i = fileName.lastIndexOf('.');
         return List.of(fileName.substring(0, i), fileName.substring(i + 1));
     }
 
 
-    @Transactional
+    @Transactional //todo нахуя транзакция
     public boolean isUserOwner(UUID id) {
         return fileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("File with id %s not exists", id)))
@@ -91,7 +86,7 @@ public class FileService {
         return storageMapper.fileToDto(file);
     }
 
-    public String getName(UUID id) {
+    public String getFileNameByFileId(UUID id) {
         File file = fileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("file with id %s not exist", id)));
         return file.getFilename() + '.' + file.getExtension();
