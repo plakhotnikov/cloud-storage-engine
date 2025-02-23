@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final PasswordRecoveryService passwordRecoveryService;
 
     /**
-     * @param loginDto
+     * @param loginDto //todo не заполнил
      * @return userResponseDto with access, refresh tokens and list of authorities
      */
     @PostMapping("/login")
@@ -31,8 +31,8 @@ public class AuthenticationController {
     }
 
     /**
-     * @param registrationDto
-     * @action send you verify email message
+     * @param registrationDto //todo не заполнил
+     * @action send you verify email message //todo fix
      * @return userResponseDto which contains username
      */
     @PostMapping("/registration")

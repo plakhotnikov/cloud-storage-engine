@@ -26,6 +26,7 @@ public class StorageController {
     private final DirectoryService directoryService;
     private final FileRepository fileRepository;
 
+    //todo нет опен апи доки свегар нет сука
     @PostMapping("/upload")
     @PreAuthorize("@directoryService.isUserOwner(#directoryId)")
     public FileDto uploadFile(@RequestParam Long directoryId, @RequestParam MultipartFile file) {
@@ -46,7 +47,7 @@ public class StorageController {
 
     @GetMapping("/{fileId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable UUID fileId) {
-        String filename = fileService.getName(fileId);
+        String filename = fileService.getFileNameByFileId(fileId);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + URLEncoder.encode(filename, StandardCharsets.UTF_8));

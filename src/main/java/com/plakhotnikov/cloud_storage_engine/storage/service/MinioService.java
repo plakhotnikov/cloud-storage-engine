@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
@@ -17,10 +18,11 @@ import java.io.InputStream;
 @RequiredArgsConstructor
 public class MinioService {
     private final MinioClient minioClient;
+
     @Value("#{minioProperties.getBucketName()}")
     private String bucketName;
 
-    @PostConstruct
+    @PostConstruct // todo вынести в конфиг
     public void init() {
         try {
             if (!minioClient.bucketExists(
@@ -48,11 +50,8 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new DownloadException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DownloadException(e.getMessage());
         }
     }
 
@@ -65,16 +64,13 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new DeleteFileException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DeleteFileException(e.getMessage());
         }
     }
 
-    public void upload(String objectName, InputStream inputStream) {
-        try {
+    public void upload(String objectName, MultipartFile file) {
+        try(InputStream inputStream = file.getInputStream()) {
              minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
@@ -84,11 +80,8 @@ public class MinioService {
                             .build()
             );
         }
-        catch (MinioException e) {
-            throw new UploadFileException(e);
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UploadFileException(e.getMessage());
         }
     }
 }

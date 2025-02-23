@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 @ToString
 @AllArgsConstructor
-
 public class Directory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

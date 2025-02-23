@@ -27,7 +27,7 @@ public class JwtServiceTest {
                 () -> assertTrue(jwtService.validateAccessToken(token)),
                 () -> assertThrows(JwtException.class, () -> jwtService.validateRefreshToken(token)),
                 () -> assertTrue(LocalDateTime.now().isAfter(jwtService.getIssuedAtFromAccessClaims(token))),
-                () -> assertEquals(jwtService.getUsernameFromAccessClaims(token), "abc@abc.ru")
+                () -> assertEquals("abc@abc.ru", jwtService.getUsernameFromAccessClaims(token)) // todo используй Assertions.assertThat
         );
     }
     @Test
@@ -39,7 +39,7 @@ public class JwtServiceTest {
                 () -> assertTrue(jwtService.validateRefreshToken(token)),
                 () -> assertThrows(JwtException.class, () -> jwtService.validateAccessToken(token)),
                 () -> assertTrue(LocalDateTime.now().isAfter(jwtService.getIssuedAtFromRefreshClaims(token))),
-                () -> assertEquals(jwtService.getUsernameFromRefreshClaims(token), "abc@abc.ru")
+                () -> assertEquals("abc@abc.ru", jwtService.getUsernameFromRefreshClaims(token))
         );
     }
 }

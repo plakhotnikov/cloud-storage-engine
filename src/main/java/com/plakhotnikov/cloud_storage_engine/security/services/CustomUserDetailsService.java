@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                                  .orElseThrow(() -> new UsernameNotFoundException(email))
                  );
 
-        cachedUserService.saveUser(user);
+        cachedUserService.saveUser(user); // todo всё понятно, переписываем
 
         return user;
     }

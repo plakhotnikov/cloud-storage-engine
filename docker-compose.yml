@@ -16,7 +16,14 @@ services:
         condition: service_healthy
       minio:
         condition: service_started
-
+  pgadmin:
+    container_name: pgAdminSelfGuru
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: lxqtpr@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: lxqtpr2021
+    ports:
+      - "5050:80"
 
   postgres:
     image: postgres:latest
@@ -27,6 +34,8 @@ services:
       - POSTGRES_PASSWORD=123
     volumes:
       - database_volume:/postgres
+    ports:
+      - "5432:5432"
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "vova" ]
       interval: 10s
