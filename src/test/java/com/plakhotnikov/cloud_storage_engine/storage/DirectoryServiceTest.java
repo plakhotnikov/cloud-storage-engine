@@ -96,7 +96,7 @@ public class DirectoryServiceTest {
                 () -> assertThat(dto2.getName()).isEqualTo(createDirectoryDto.getName()),
                 () -> assertAll(
                         () -> assertThat(dto2.getChildren().size()).isEqualTo(2),
-                        () -> assertThat(dto2.getChildren().get(0).getName()).isEqualTo(createDirectoryDto2.getName()),
+                        () -> assertThat(dto2.getChildren().getFirst().getName()).isEqualTo(createDirectoryDto2.getName()),
                         () -> assertThat(dto2.getChildren().get(1).getName()).isEqualTo(createDirectoryDto3.getName())
                 ),
                 () -> assertThat(dto2.getFiles()).isEqualTo(List.of())

@@ -1,6 +1,5 @@
 package com.plakhotnikov.cloud_storage_engine.storage;
 
-import com.plakhotnikov.cloud_storage_engine.exception.DeleteFileException;
 import com.plakhotnikov.cloud_storage_engine.exception.DownloadException;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.CreateDirectoryDto;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

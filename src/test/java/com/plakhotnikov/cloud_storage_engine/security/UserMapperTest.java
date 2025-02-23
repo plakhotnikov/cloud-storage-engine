@@ -1,6 +1,5 @@
 package com.plakhotnikov.cloud_storage_engine.security;
 
-import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserLoginDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;

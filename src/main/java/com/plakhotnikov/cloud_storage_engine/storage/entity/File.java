@@ -2,7 +2,6 @@ package com.plakhotnikov.cloud_storage_engine.storage.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
