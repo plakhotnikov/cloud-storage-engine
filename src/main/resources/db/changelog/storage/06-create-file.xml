@@ -7,7 +7,7 @@
 
     <changeSet id="6" author="plakhotnikov">
         <sql>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</sql>
-        <createTable tableName="file">
+        <createTable tableName="fileEntity">
             <column name="id" type="UUID" defaultValueComputed="gen_random_uuid()">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -17,10 +17,10 @@
             <column name="directory_id" type="BIGINT"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="file"
+        <addForeignKeyConstraint baseTableName="fileEntity"
                                  baseColumnNames="directory_id"
                                  constraintName="fk_file_directory_id"
-                                 referencedTableName="directory"
+                                 referencedTableName="directoryEntity"
                                  referencedColumnNames="id"/>
     </changeSet>
 

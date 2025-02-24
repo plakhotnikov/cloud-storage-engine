@@ -6,7 +6,7 @@ import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
 import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,11 +37,11 @@ public class UserService {
     }
 
     /**
-     * @return UserResponseDto of User with param email
+     * @return UserResponseDto of UserEntity with param email
      */
     public UserResponseDto findByEmail(String email) {
         return  userMapper.userToUserResponseDto(userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found")));
+                .orElseThrow(() -> new UsernameNotFoundException("UserEntity not found")));
     }
 
 
@@ -51,16 +51,16 @@ public class UserService {
      */
     @Transactional
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
-        User userToSave = userMapper.registrationDtoToUser(userRegistrationDto);
-        userToSave.setPassword(passwordEncoder.encode(userToSave.getPassword()));
-        userToSave.setLastResetTime(LocalDateTime.now());
-        if (userRepository.existsByEmail(userToSave.getEmail())) {
-            throw new UsernameNotFoundException("Email " + userToSave.getEmail() + " already exists");
+        UserEntity userEntityToSave = userMapper.registrationDtoToUser(userRegistrationDto);
+        userEntityToSave.setPassword(passwordEncoder.encode(userEntityToSave.getPassword()));
+        userEntityToSave.setLastResetTime(LocalDateTime.now());
+        if (userRepository.existsByEmail(userEntityToSave.getEmail())) {
+            throw new UsernameNotFoundException("Email " + userEntityToSave.getEmail() + " already exists");
         }
 
-        userToSave = userRepository.save(userToSave);
+        userEntityToSave = userRepository.save(userEntityToSave);
 
-        return userMapper.userToUserResponseDto(userToSave);
+        return userMapper.userToUserResponseDto(userEntityToSave);
     }
 
     /**
@@ -72,25 +72,25 @@ public class UserService {
             throw new BadCredentialsException("Invalid token");
         }
         String email = tokenService.getEmailByToken(token);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        if (!user.getAuthorities().isEmpty()) {
-            throw new UsernameNotFoundException("User with email " + email + " is already verified");
+        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("UserEntity does not exist"));
+        if (!userEntity.getAuthorities().isEmpty()) {
+            throw new UsernameNotFoundException("UserEntity with email " + email + " is already verified");
         }
 
-        user.setAuthorities(List.of(roleRepository.findByRole(RoleEnum.USER).orElseThrow(
-                () -> new RuntimeException("Role USER not found")
+        userEntity.setAuthorities(List.of(roleRepository.findByRole(RoleEnum.USER).orElseThrow(
+                () -> new RuntimeException("RoleEntity USER not found")
         )));
         tokenService.deleteToken(token);
 
         cachedUserService.deleteUser(email);
-        return userMapper.userToUserResponseDto(user);
+        return userMapper.userToUserResponseDto(userEntity);
     }
 
     /**
      * @return check if user is verified
      */
     public boolean isVerified(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return !user.getAuthorities().isEmpty();
+        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("UserEntity not found"));
+        return !userEntity.getAuthorities().isEmpty();
     }
 }

@@ -2,10 +2,7 @@ package com.plakhotnikov.cloud_storage_engine.security.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -13,7 +10,9 @@ import org.springframework.security.core.GrantedAuthority;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Role implements GrantedAuthority {
+@Builder
+@Table(name = "role")
+public class RoleEntity implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

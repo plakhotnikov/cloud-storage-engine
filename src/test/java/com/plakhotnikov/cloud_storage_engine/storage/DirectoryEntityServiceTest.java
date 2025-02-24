@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class DirectoryServiceTest {
+public class DirectoryEntityServiceTest {
     @Autowired
     private DirectoryService directoryService;
 
@@ -76,7 +76,7 @@ public class DirectoryServiceTest {
         CreateDirectoryDto createDirectoryDto = new CreateDirectoryDto(null, "test_is_user_owner");
 
         DirectoryDto dto = directoryService.createDirectory(createDirectoryDto);
-        assertThat(directoryService.isUserOwner(dto.getId())).isTrue();
+        assertThat(directoryService.isDirectoryOwner(dto.getId())).isTrue();
     }
 
 
@@ -89,7 +89,7 @@ public class DirectoryServiceTest {
         DirectoryDto directory1 = directoryService.createDirectory(createDirectoryDto2);
         DirectoryDto directory2 = directoryService.createDirectory(createDirectoryDto3);
 
-        DirectoryDto dto2 = directoryService.getDirectory(rootDir.getId());
+        DirectoryDto dto2 = directoryService.getDirectoryById(rootDir.getId());
 
         assertAll(
                 () -> assertThat(dto2.getId()).isNotNull(),

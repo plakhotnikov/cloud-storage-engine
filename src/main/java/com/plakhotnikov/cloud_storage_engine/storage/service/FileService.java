@@ -1,8 +1,8 @@
 package com.plakhotnikov.cloud_storage_engine.storage.service;
 
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.Directory;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.File;
+import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
+import com.plakhotnikov.cloud_storage_engine.storage.entity.FileEntity;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.StorageMapper;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.FileDto;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.MoveFileDto;
@@ -28,42 +28,39 @@ public class FileService {
 
     @Transactional
     public FileDto upload(MultipartFile fileToUpload, Long directoryId) {
-        Directory directory = directoryRepository.findById(directoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Directory with id '%s' not found", directoryId)));
-        File file = new File();
-        file.setDirectory(directory);
+        DirectoryEntity directoryEntity = directoryRepository.findById(directoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", directoryId)));
+
         if (fileToUpload.getOriginalFilename() == null) {
-            throw new ResourceNotFoundException("File not uploaded");
+            throw new ResourceNotFoundException("FileEntity not uploaded");
         }
         List<String> fileNameAndExtension = separateFileName(fileToUpload.getOriginalFilename());
 
-        file.setFilename(fileNameAndExtension.get(0));
-        file.setExtension(fileNameAndExtension.get(1));
-        //TODO checksum
-        file = fileRepository.save(file);
-        try {
-            minioService.upload(file.getId().toString(), fileToUpload.getInputStream());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        FileEntity fileEntity = FileEntity.builder()
+                .directoryEntity(directoryEntity)
+                .filename(fileNameAndExtension.getFirst())
+                .extension(fileNameAndExtension.get(1))
+                .build();
 
-        return storageMapper.fileToDto(file);
+        //TODO checksum
+        fileEntity = fileRepository.save(fileEntity);
+
+        minioService.upload(fileEntity.getId().toString(), fileToUpload);
+
+        return storageMapper.fileToDto(fileEntity);
     }
 
-    @Transactional
     public void deleteFile(UUID fileId) {
         if (fileRepository.existsById(fileId)) {
             minioService.deleteFile(fileId.toString());
             fileRepository.deleteById(fileId);
         }
         else {
-            throw new ResourceNotFoundException(String.format("File with id '%s' not found", fileId));
+            throw new ResourceNotFoundException(String.format("FileEntity with id '%s' not found", fileId));
         }
     }
 
     public InputStream downloadFile(UUID fileId) {
-
         return minioService.download(fileId.toString());
     }
 
@@ -74,26 +71,26 @@ public class FileService {
 
 
     @Transactional
-    public boolean isUserOwner(UUID id) {
+    public boolean isFileOwner(UUID id) {
         return fileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("File with id %s not exists", id)))
-                .getDirectory().getOwner().getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("FileEntity with id %s not exists", id)))
+                .getDirectoryEntity().getOwner().getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @Transactional
-    public FileDto move(MoveFileDto moveFileDto) {
-        Directory directory = directoryRepository.findById(moveFileDto.getTargetDirectoryId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Directory with id '%s' not found", moveFileDto.getTargetDirectoryId())));
-        File file = fileRepository.findById(moveFileDto.getFileId())
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("File with id '%s' not found", moveFileDto.getFileId())));
-        file.setDirectory(directory);
-        file = fileRepository.save(file);
-        return storageMapper.fileToDto(file);
+    public FileDto moveFileToDir(MoveFileDto moveFileDto) {
+        DirectoryEntity directoryEntity = directoryRepository.findById(moveFileDto.getTargetDirectoryId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", moveFileDto.getTargetDirectoryId())));
+        FileEntity fileEntity = fileRepository.findById(moveFileDto.getFileId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("FileEntity with id '%s' not found", moveFileDto.getFileId())));
+        fileEntity.setDirectoryEntity(directoryEntity);
+        fileEntity = fileRepository.save(fileEntity);
+        return storageMapper.fileToDto(fileEntity);
     }
 
-    public String getName(UUID id) {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("file with id %s not exist", id)));
-        return file.getFilename() + '.' + file.getExtension();
+    public String getFileNameById(UUID id) {
+        FileEntity fileEntity = fileRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("fileEntity with id %s not exist", id)));
+        return fileEntity.getFilename() + '.' + fileEntity.getExtension();
     }
 }

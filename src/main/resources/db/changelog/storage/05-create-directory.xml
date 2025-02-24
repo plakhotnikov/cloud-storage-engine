@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="5" author="plakhotnikov">
-        <createTable tableName="directory">
+        <createTable tableName="directoryEntity">
             <column name="id" type="BIGSERIAL">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -15,13 +15,13 @@
             <column name="user_id" type="BIGINT"/>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="directory"
+        <addForeignKeyConstraint baseTableName="directoryEntity"
                                  baseColumnNames="root_directory_id"
                                  constraintName="fk_directory_root_directory_id"
-                                 referencedTableName="directory"
+                                 referencedTableName="directoryEntity"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="directory"
+        <addForeignKeyConstraint baseTableName="directoryEntity"
                                  baseColumnNames="user_id"
                                  constraintName="fk_directory_user_id"
                                  referencedTableName="users"

@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.security.jwt;
 
 import com.plakhotnikov.cloud_storage_engine.properties.JwtProperties;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -33,7 +33,7 @@ public class JwtService {
     /**
      * @return generated access token
      */
-    public String generateAccessToken(User user) {
+    public String generateAccessToken(UserEntity userEntity) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant accessExpirationInstant =
                 now.plusMinutes(jwtProperties.getACCESS_EXPIRATION_TIME())
@@ -41,19 +41,19 @@ public class JwtService {
                         .toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(userEntity.getUsername())
                 .setExpiration(accessExpiration)
                 .setIssuedAt(new Date())
                 .signWith(secretAccessKey)
-                .claim("roles", user.getAuthorities())
+                .claim("roles", userEntity.getAuthorities())
                 .compact();
     }
 
     /**
-     * @param user
+     * @param userEntity
      * @return generated refresh token
      */
-    public String generateRefreshToken(User user) {
+    public String generateRefreshToken(UserEntity userEntity) {
         final LocalDateTime now = LocalDateTime.now();
         final Instant refreshExpirationInstant =
                 now.plusMinutes(jwtProperties.getREFRESH_EXPIRATION_TIME())
@@ -61,7 +61,7 @@ public class JwtService {
                         .toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(userEntity.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(refreshExpiration)
                 .signWith(secretRefreshKey)

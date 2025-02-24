@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.security.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.plakhotnikov.cloud_storage_engine.security.additional.LowerCaseDeserializer;
+import com.plakhotnikov.cloud_storage_engine.util.LowerCaseDeserializer;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 

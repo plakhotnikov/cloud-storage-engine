@@ -117,9 +117,9 @@ public class StorageControllerTest {
 
     @Test
     public void move_file_test() {
-        var createDto = new CreateDirectoryDto(null, "move-test");
+        var createDto = new CreateDirectoryDto(null, "moveFileToDir-test");
         var dir = storageController.createDirectory(createDto);
-        var createDto2 = new CreateDirectoryDto(dir.getId(), "move-test1");
+        var createDto2 = new CreateDirectoryDto(dir.getId(), "moveFileToDir-test1");
         var dir2 = storageController.createDirectory(createDto2);
         MockMultipartFile file = new MockMultipartFile("test", "test.txt", "text/plain", "hello".getBytes());
         FileDto saved = storageController.uploadFile(dir.getId(), file);

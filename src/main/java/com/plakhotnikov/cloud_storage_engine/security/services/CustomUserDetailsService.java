@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,15 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = cachedUserService.loadUserByUsername(email)
+        UserEntity userEntity = cachedUserService.loadUserByUsername(email)
                  .orElse(
                          userRepository.findByEmail(email.toLowerCase())
                                  .orElseThrow(() -> new UsernameNotFoundException(email))
                  );
 
-        cachedUserService.saveUser(user);
+        cachedUserService.saveUser(userEntity);
 
-        return user;
+        return userEntity;
     }
 
 }

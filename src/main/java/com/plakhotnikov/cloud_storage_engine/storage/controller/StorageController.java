@@ -27,26 +27,26 @@ public class StorageController {
     private final FileRepository fileRepository;
 
     @PostMapping("/upload")
-    @PreAuthorize("@directoryService.isUserOwner(#directoryId)")
+    @PreAuthorize("@directoryService.isDirectoryOwner(#directoryId)")
     public FileDto uploadFile(@RequestParam Long directoryId, @RequestParam MultipartFile file) {
         return fileService.upload(file, directoryId);
     }
 
     @GetMapping("/list")
-    @PreAuthorize("@directoryService.isUserOwner(#directoryId)")
+    @PreAuthorize("@directoryService.isDirectoryOwner(#directoryId)")
     public DirectoryDto list(@RequestParam(required = false, defaultValue = "0") Long directoryId) {
-        return directoryService.getDirectory(directoryId);
+        return directoryService.getDirectoryById(directoryId);
     }
 
     @PostMapping("/create-directory")
-    @PreAuthorize("#createDirectoryDto.parentDirectoryId == null || @directoryService.isUserOwner(#createDirectoryDto.parentDirectoryId)")
+    @PreAuthorize("#createDirectoryDto.parentDirectoryId == null || @directoryService.isDirectoryOwner(#createDirectoryDto.parentDirectoryId)")
     public DirectoryDto createDirectory(@RequestBody CreateDirectoryDto createDirectoryDto) {
         return directoryService.createDirectory(createDirectoryDto);
     }
 
     @GetMapping("/{fileId}")
     public ResponseEntity<byte[]> downloadFile(@PathVariable UUID fileId) {
-        String filename = fileService.getName(fileId);
+        String filename = fileService.getFileNameById(fileId);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
@@ -62,14 +62,14 @@ public class StorageController {
     }
 
     @DeleteMapping("/{fileId}")
-    @PreAuthorize("@fileService.isUserOwner(#fileId)")
+    @PreAuthorize("@fileService.isFileOwner(#fileId)")
     public void deleteFile(@PathVariable UUID fileId) {
         fileRepository.deleteById(fileId);
     }
 
     @PostMapping("/move")
-    @PreAuthorize("@fileService.isUserOwner(#moveFileDto.fileId) && @directoryService.isUserOwner(#moveFileDto.targetDirectoryId)")
+    @PreAuthorize("@fileService.isFileOwner(#moveFileDto.fileId) && @directoryService.isDirectoryOwner(#moveFileDto.targetDirectoryId)")
     public FileDto moveFile(MoveFileDto moveFileDto) {
-        return fileService.move(moveFileDto);
+        return fileService.moveFileToDir(moveFileDto);
     }
 }

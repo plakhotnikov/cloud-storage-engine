@@ -4,7 +4,7 @@ import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserLoginDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.security.jwt.JwtService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +34,10 @@ public class AuthenticationService {
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(auth);
-            User user = (User) auth.getPrincipal();
-            UserResponseDto result = userMapper.userToUserResponseDto(user);
-            result.setRefreshToken(jwtService.generateRefreshToken(user));
-            result.setAccessToken(jwtService.generateAccessToken(user));
+            UserEntity userEntity = (UserEntity) auth.getPrincipal();
+            UserResponseDto result = userMapper.userToUserResponseDto(userEntity);
+            result.setRefreshToken(jwtService.generateRefreshToken(userEntity));
+            result.setAccessToken(jwtService.generateAccessToken(userEntity));
             return result;
         }
         catch (BadCredentialsException e) {
@@ -63,14 +63,14 @@ public class AuthenticationService {
             throw new JwtException("invalid refreshToken");
         }
 
-        User user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        if (jwtService.getIssuedAtFromRefreshClaims(token).isBefore(user.getLastResetTime())) {
+        UserEntity userEntity = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("UserEntity does not exist"));
+        if (jwtService.getIssuedAtFromRefreshClaims(token).isBefore(userEntity.getLastResetTime())) {
             throw new JwtException("password changed");
         }
-        UserResponseDto responseDto = userMapper.userToUserResponseDto(user);
-        responseDto.setAccessToken(jwtService.generateAccessToken(user));
-        responseDto.setRefreshToken(jwtService.generateRefreshToken(user));
+        UserResponseDto responseDto = userMapper.userToUserResponseDto(userEntity);
+        responseDto.setAccessToken(jwtService.generateAccessToken(userEntity));
+        responseDto.setRefreshToken(jwtService.generateRefreshToken(userEntity));
         return responseDto;
     }
 }

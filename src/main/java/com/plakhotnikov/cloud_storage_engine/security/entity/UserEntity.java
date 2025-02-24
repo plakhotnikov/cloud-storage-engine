@@ -3,7 +3,7 @@ package com.plakhotnikov.cloud_storage_engine.security.entity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.plakhotnikov.cloud_storage_engine.storage.entity.Directory;
+import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -24,7 +24,7 @@ import java.util.List;
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,12 +46,12 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    @JsonDeserialize(contentAs = Role.class)
-    private List<Role> authorities = new ArrayList<>();
+    @JsonDeserialize(contentAs = RoleEntity.class)
+    private List<RoleEntity> authorities = new ArrayList<>();
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Directory> directories;
+    private List<DirectoryEntity> directories;
 
     @Override
     public String getUsername() {

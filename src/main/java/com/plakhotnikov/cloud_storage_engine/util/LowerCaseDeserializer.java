@@ -1,4 +1,4 @@
-package com.plakhotnikov.cloud_storage_engine.security.additional;
+package com.plakhotnikov.cloud_storage_engine.util;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -17,7 +17,7 @@ public class LowerCaseDeserializer extends JsonDeserializer<String> {
      * @throws JacksonException
      */
     @Override
-    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
         String value = p.getText();
         return value != null ? value.toLowerCase() : null;
     }

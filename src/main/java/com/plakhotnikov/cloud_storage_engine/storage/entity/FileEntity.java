@@ -3,10 +3,7 @@ package com.plakhotnikov.cloud_storage_engine.storage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -14,8 +11,11 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ToString
-public class File {
+@Table(name = "file")
+public class FileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -30,5 +30,5 @@ public class File {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "directory_id", referencedColumnName = "id")
-    private Directory directory;
+    private DirectoryEntity directoryEntity;
 }

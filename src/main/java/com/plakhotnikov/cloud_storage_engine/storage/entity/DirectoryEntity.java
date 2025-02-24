@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.storage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.plakhotnikov.cloud_storage_engine.security.entity.User;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,8 +14,8 @@ import java.util.List;
 @Builder
 @ToString
 @AllArgsConstructor
-
-public class Directory {
+@Table(name = "directory")
+public class DirectoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,19 +26,19 @@ public class Directory {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "root_directory_id", referencedColumnName = "id")
-    private Directory rootDirectory;
+    private DirectoryEntity rootDirectoryEntity;
 
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User owner;
+    private UserEntity owner;
 
 
-    @OneToMany(mappedBy = "rootDirectory", fetch = FetchType.LAZY)
-    private List<Directory> children;
+    @OneToMany(mappedBy = "rootDirectoryEntity", fetch = FetchType.LAZY)
+    private List<DirectoryEntity> children;
 
 
     @OneToMany(mappedBy = "directory", fetch = FetchType.LAZY)
-    private List<File> files;
+    private List<FileEntity> fileEntities;
 }
