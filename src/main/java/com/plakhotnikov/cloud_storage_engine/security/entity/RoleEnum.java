@@ -1,7 +1,6 @@
 package com.plakhotnikov.cloud_storage_engine.security.entity;
 
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

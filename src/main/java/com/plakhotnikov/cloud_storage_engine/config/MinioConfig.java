@@ -7,7 +7,6 @@ import io.minio.MinioClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.ToString;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

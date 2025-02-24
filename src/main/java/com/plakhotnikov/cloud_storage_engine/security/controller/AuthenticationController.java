@@ -38,7 +38,7 @@ public class AuthenticationController {
     @PostMapping("/registration")
     public UserResponseDto registration(@RequestBody UserRegistrationDto registrationDto) {
         UserResponseDto userResponseDto = userService.registration(registrationDto);
-        emailService.sendVerificationEmail(userResponseDto.getEmail(), tokenService.generateVerifyToken(userResponseDto.getEmail()));
+
         return userResponseDto;
     }
 

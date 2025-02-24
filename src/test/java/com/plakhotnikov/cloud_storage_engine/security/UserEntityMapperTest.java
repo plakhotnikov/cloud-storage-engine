@@ -28,7 +28,7 @@ public class UserEntityMapperTest {
                 () -> assertNull(userResponseDto.getAccessToken()),
                 () -> assertNull(userResponseDto.getRefreshToken()),
                 () -> assertEquals(userEntity.getAuthorities().size(), userResponseDto.getRoles().size()),
-                () -> assertEquals(userEntity.getAuthorities().get(0).getAuthority(), userResponseDto.getRoles().get(0))
+                () -> assertEquals(userEntity.getAuthorities().getFirst().getAuthority(), userResponseDto.getRoles().getFirst())
         );
     }
 
