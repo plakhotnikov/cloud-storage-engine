@@ -11,15 +11,15 @@ spring:
   datasource:
     username: vova
     password: 123
-#    url: jdbc:postgresql://postgres:5432/postgres
-    url: jdbc:postgresql://localhost:5432/postgres # для локального запуска
+    url: jdbc:postgresql://postgres:5432/postgres
+#    url: jdbc:postgresql://localhost:5432/postgres # для локального запуска
     driver-class-name: org.postgresql.Driver
   data:
     jdbc:
       dialect: postgresql
     redis:
-#      host: redis
-      host: localhost # для локального запуска
+      host: redis
+#      host: localhost # для локального запуска
       port: 6379
       password:
   jpa:
@@ -36,10 +36,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: vovan4ik1810p@gmail.com
-    password: qekj jnfm bhna ezey
-#    username: ${EMAIL}
-#    password: ${EMAIL_PASSWORD}
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -60,8 +58,8 @@ jwt:
 
 
 minio:
-#  endpoint: http://minio:9000
-  endpoint: http://localhost:9000 # для локального запуска
+  endpoint: http://minio:9000
+#  endpoint: http://localhost:9000 # для локального запуска
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: root
