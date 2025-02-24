@@ -1,11 +1,9 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
-import com.plakhotnikov.cloud_storage_engine.security.RoleRepository;
 import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
-import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEntity;
 import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +24,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
-    private final RoleRepository roleRepository;
     private final CachedUserService cachedUserService;
 
     /**

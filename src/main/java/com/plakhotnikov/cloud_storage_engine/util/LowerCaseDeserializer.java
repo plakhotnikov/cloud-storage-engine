@@ -13,8 +13,7 @@ public class LowerCaseDeserializer extends JsonDeserializer<String> {
      * @param ctxt Context that can be used to access information about
      *             this deserialization activity.
      * @return result in lower case
-     * @throws IOException
-     * @throws JacksonException
+     * @throws {@link IOException}
      */
     @Override
     public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{

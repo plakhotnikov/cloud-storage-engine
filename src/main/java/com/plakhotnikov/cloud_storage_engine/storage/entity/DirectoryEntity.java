@@ -26,7 +26,7 @@ public class DirectoryEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "root_directory_id", referencedColumnName = "id")
-    private DirectoryEntity rootDirectoryEntity;
+    private DirectoryEntity rootDirectory;
 
     @JsonIgnore
     @ToString.Exclude
@@ -35,10 +35,10 @@ public class DirectoryEntity {
     private UserEntity owner;
 
 
-    @OneToMany(mappedBy = "rootDirectoryEntity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "rootDirectory", fetch = FetchType.LAZY)
     private List<DirectoryEntity> children;
 
 
     @OneToMany(mappedBy = "directory", fetch = FetchType.LAZY)
-    private List<FileEntity> fileEntities;
+    private List<FileEntity> files;
 }

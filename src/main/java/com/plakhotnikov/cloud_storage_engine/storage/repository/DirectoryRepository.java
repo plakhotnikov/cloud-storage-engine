@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface DirectoryRepository extends JpaRepository<DirectoryEntity, Long> {
-    @Query("SELECT d from DirectoryEntity d WHERE d.owner.email = :username AND d.rootDirectoryEntity IS NULL")
+    @Query("SELECT d from DirectoryEntity d WHERE d.owner.email = :username AND d.rootDirectory IS NULL")
     List<DirectoryEntity> findRootDirectories(String username);
 }

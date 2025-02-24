@@ -23,7 +23,7 @@ public class MinioConfig {
                 .endpoint(minioProperties.getEndpoint())
                 .credentials(minioProperties.getAccessKey(), minioProperties.getSecretKey())
                 .build();
-        if (minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperties.getBucketName()).build())) {
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperties.getBucketName()).build())) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(minioProperties.getBucketName()).build());
         }
         return minioClient;

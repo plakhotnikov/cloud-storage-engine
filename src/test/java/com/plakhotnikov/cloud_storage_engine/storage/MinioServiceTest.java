@@ -51,7 +51,7 @@ public class MinioServiceTest {
     void upload_file_test() {
         try {
             MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.txt", "text/plain", "hello".getBytes());
-            minioService.upload(mockMultipartFile.getOriginalFilename(), mockMultipartFile.getInputStream());
+            minioService.upload(mockMultipartFile.getOriginalFilename(), mockMultipartFile);
             InputStream download = minioService.download("test.txt");
             byte[] bytes = download.readAllBytes();
             assertThat(bytes).isEqualTo("hello".getBytes());
@@ -70,7 +70,7 @@ public class MinioServiceTest {
     void delete_file_test() {
         try {
             MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.txt", "text/plain", "hello".getBytes());
-            minioService.upload(mockMultipartFile.getOriginalFilename(), mockMultipartFile.getInputStream());
+            minioService.upload(mockMultipartFile.getOriginalFilename(), mockMultipartFile);
             InputStream download = minioService.download("test.txt");
             byte[] bytes = download.readAllBytes();
             assertThat(bytes).isEqualTo("hello".getBytes());

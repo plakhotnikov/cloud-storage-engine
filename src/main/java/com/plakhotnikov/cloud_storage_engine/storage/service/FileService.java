@@ -1,6 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.storage.service;
 
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
+import com.plakhotnikov.cloud_storage_engine.security.controller.AbstractSecuredController;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.FileEntity;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.StorageMapper;
@@ -10,9 +11,9 @@ import com.plakhotnikov.cloud_storage_engine.storage.repository.DirectoryReposit
 import com.plakhotnikov.cloud_storage_engine.storage.repository.FileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import com.plakhotnikov.cloud_storage_engine.util.FileUtil;
 
 import java.io.InputStream;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileService {
+public class FileService extends AbstractSecuredController {
     private final FileRepository fileRepository;
     private final DirectoryRepository directoryRepository;
     private final MinioService minioService;
@@ -34,10 +35,10 @@ public class FileService {
         if (fileToUpload.getOriginalFilename() == null) {
             throw new ResourceNotFoundException("FileEntity not uploaded");
         }
-        List<String> fileNameAndExtension = separateFileName(fileToUpload.getOriginalFilename());
+        List<String> fileNameAndExtension = FileUtil.separateFileName(fileToUpload.getOriginalFilename());
 
         FileEntity fileEntity = FileEntity.builder()
-                .directoryEntity(directoryEntity)
+                .directory(directoryEntity)
                 .filename(fileNameAndExtension.getFirst())
                 .extension(fileNameAndExtension.get(1))
                 .build();
@@ -64,17 +65,13 @@ public class FileService {
         return minioService.download(fileId.toString());
     }
 
-    private List<String> separateFileName(String fileName) {
-        int i = fileName.lastIndexOf('.');
-        return List.of(fileName.substring(0, i), fileName.substring(i + 1));
-    }
 
 
     @Transactional
     public boolean isFileOwner(UUID id) {
         return fileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("FileEntity with id %s not exists", id)))
-                .getDirectoryEntity().getOwner().getUsername().equals(SecurityContextHolder.getContext().getAuthentication().getName());
+                .getDirectory().getOwner().getUsername().equals(this.getUserName());
     }
 
     @Transactional
@@ -83,7 +80,7 @@ public class FileService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", moveFileDto.getTargetDirectoryId())));
         FileEntity fileEntity = fileRepository.findById(moveFileDto.getFileId())
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("FileEntity with id '%s' not found", moveFileDto.getFileId())));
-        fileEntity.setDirectoryEntity(directoryEntity);
+        fileEntity.setDirectory(directoryEntity);
         fileEntity = fileRepository.save(fileEntity);
         return storageMapper.fileToDto(fileEntity);
     }

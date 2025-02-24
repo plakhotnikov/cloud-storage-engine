@@ -30,5 +30,5 @@ public class FileEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "directory_id", referencedColumnName = "id")
-    private DirectoryEntity directoryEntity;
+    private DirectoryEntity directory;
 }

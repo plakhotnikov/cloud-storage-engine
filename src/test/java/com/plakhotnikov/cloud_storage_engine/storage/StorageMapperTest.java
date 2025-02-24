@@ -94,15 +94,15 @@ public class StorageMapperTest {
         DirectoryEntity child2 = new DirectoryEntity();
         child2.setName("child2");
         child2.setId(3L);
-        directoryEntity.setRootDirectoryEntity(null);
+        directoryEntity.setRootDirectory(null);
         FileEntity fileEntity = new FileEntity();
         fileEntity.setId(UUID.randomUUID());
         fileEntity.setCheckSum("123432");
         fileEntity.setExtension("txt");
         fileEntity.setFilename("filename");
         directoryEntity.setChildren(List.of(child1, child2));
-        directoryEntity.setFileEntities(List.of(fileEntity));
-        child2.setFileEntities(List.of(fileEntity));
+        directoryEntity.setFiles(List.of(fileEntity));
+        child2.setFiles(List.of(fileEntity));
 
         DirectoryDto directoryDto = storageMapper.dirToDto(directoryEntity);
         var files = directoryDto.getFiles();

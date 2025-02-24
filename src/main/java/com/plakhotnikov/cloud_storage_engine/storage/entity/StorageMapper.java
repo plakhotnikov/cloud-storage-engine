@@ -11,7 +11,7 @@ public interface StorageMapper {
     FileDto fileToDto(FileEntity fileEntity);
 
     @Mapping(source = "children", target = "children", qualifiedByName = "mapSubDir")
-    @Mapping(source = "fileEntities", target = "fileEntities", qualifiedByName = "mapFile")
+    @Mapping(source = "files", target = "files", qualifiedByName = "mapFile")
     DirectoryDto dirToDto(DirectoryEntity directoryEntity);
 
     @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
