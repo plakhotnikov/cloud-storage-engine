@@ -6,7 +6,6 @@ import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
 import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
-import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,7 +23,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
-    private final CachedUserService cachedUserService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final UserCacheService userCacheService;
 
     /**
      * Checks if user exist
@@ -60,6 +60,7 @@ public class UserService {
         return userMapper.userToUserResponseDto(userEntityToSave);
     }
 
+
     /**
      * If token is valid, gives to user role "USER"
      */
@@ -69,7 +70,8 @@ public class UserService {
             throw new BadCredentialsException("Invalid token");
         }
         String email = tokenService.getEmailByToken(token);
-        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("UserEntity does not exist"));
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("UserEntity does not exist"));
         if (!userEntity.getAuthorities().isEmpty()) {
             throw new UsernameNotFoundException("UserEntity with email " + email + " is already verified");
         }
@@ -77,8 +79,10 @@ public class UserService {
         userEntity.getAuthorities().add(RoleEnum.getEntityFromEnum(RoleEnum.USER));
 
         tokenService.deleteToken(token);
+        userEntity = userRepository.save(userEntity);
 
-        cachedUserService.deleteUser(email);
+        userCacheService.cacheUser(userEntity);
+
         return userMapper.userToUserResponseDto(userEntity);
     }
 
@@ -86,7 +90,7 @@ public class UserService {
      * @return check if user is verified
      */
     public boolean isVerified(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("UserEntity not found"));
+        UserEntity userEntity = (UserEntity) customUserDetailsService.loadUserByUsername(email);
         return !userEntity.getAuthorities().isEmpty();
     }
 }

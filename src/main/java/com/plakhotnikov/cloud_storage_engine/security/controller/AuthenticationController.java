@@ -37,9 +37,7 @@ public class AuthenticationController {
      */
     @PostMapping("/registration")
     public UserResponseDto registration(@RequestBody UserRegistrationDto registrationDto) {
-        UserResponseDto userResponseDto = userService.registration(registrationDto);
-
-        return userResponseDto;
+        return userService.registration(registrationDto);
     }
 
 
@@ -56,7 +54,7 @@ public class AuthenticationController {
      * @param email
      * @action send you email verify message if your account isn't verified
      */
-    @GetMapping("send-verification-email")
+    @GetMapping("/send-verification-email")
     public ResponseEntity<?> sendVerificationEmail(@RequestParam String email) {
         if (!userService.isVerified(email)) {
             emailService.sendVerificationEmail(email, tokenService.generateVerifyToken(email));

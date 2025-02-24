@@ -1,8 +1,8 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
-import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final CachedUserService cachedUserService;
 
 
     /**
@@ -20,17 +19,10 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @return UserDetails
      */
     @Override
+    @Cacheable(key = "#email", cacheNames = "users")
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        UserEntity userEntity = cachedUserService.loadUserByUsername(email)
-                 .orElse(
-                         userRepository.findByEmail(email.toLowerCase())
-                                 .orElseThrow(() -> new UsernameNotFoundException(email))
-                 );
-
-        cachedUserService.saveUser(userEntity);
-
-        return userEntity;
+        return userRepository.findByEmail(email.toLowerCase())
+                .orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
 }

@@ -1,6 +1,8 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
+import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
+import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,7 +15,7 @@ public class PasswordRecoveryService {
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CachedUserService cachedUserService;
+    private final UserCacheService userCacheService;
 
 
     /** Reset password in database
@@ -27,11 +29,15 @@ public class PasswordRecoveryService {
             throw new BadCredentialsException("Invalid token");
         }
         String email = tokenService.getEmailByToken(token);
-        userRepository.findByEmail(email).ifPresent(user -> {
-            user.setPassword(passwordEncoder.encode(password));
-            userRepository.save(user);
-            tokenService.deleteToken(token);
-        });
-        cachedUserService.deleteUser(email);
+        UserEntity user =  userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(password));
+        user = userRepository.save(user);
+        userRepository.flush();
+
+        userCacheService.cacheUser(user);
+
+        tokenService.deleteToken(token);
     }
 }
