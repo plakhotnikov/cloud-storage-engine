@@ -6,17 +6,21 @@ import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
 import com.plakhotnikov.cloud_storage_engine.storage.DirectorySpecifications;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
+import com.plakhotnikov.cloud_storage_engine.storage.entity.FileEntity;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.StorageMapper;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.CreateDirectoryDto;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.DirectoryDto;
 import com.plakhotnikov.cloud_storage_engine.storage.repository.DirectoryRepository;
+import com.plakhotnikov.cloud_storage_engine.storage.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Сервис для управления директориями в облачном хранилище.
@@ -32,6 +36,8 @@ public class DirectoryService extends AbstractSecuredController {
     private final StorageMapper storageMapper;
     private final DirectoryRepository directoryRepository;
     private final UserRepository userRepository;
+    private final MinioService minioService;
+    private final FileRepository fileRepository;
 
     /**
      * Создаёт новую директорию.
@@ -124,6 +130,42 @@ public class DirectoryService extends AbstractSecuredController {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", id))));
     }
 
+
+    /**
+     * Удаляет директорию и все её вложенные поддиректории и файлы по указанному идентификатору.
+     *
+     * <p>Метод выполняется в транзакции и рекурсивно собирает все поддиректории и файлы,
+     * которые необходимо удалить. После этого файлы удаляются из MinIO, а записи о директориях
+     * и файлах удаляются из базы данных.</p>
+     *
+     * @param id идентификатор удаляемой директории
+     * @throws ResourceNotFoundException если директория с указанным идентификатором не найдена
+     */
+    @Transactional
+    public void deleteDirectoryById(Long id) {
+        ArrayList<Long> dirIds = new ArrayList<>();
+        ArrayList<UUID> fileIds = new ArrayList<>();
+        ArrayList<DirectoryEntity> toDelete = new ArrayList<>();
+        toDelete.add(directoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", id))));
+        while (!toDelete.isEmpty()) {
+            DirectoryEntity directoryEntity = toDelete.removeLast();
+            dirIds.add(directoryEntity.getId());
+            toDelete.addAll(directoryEntity.getChildren());
+            for (FileEntity file : directoryEntity.getFiles()) {
+                fileIds.add(file.getId());
+            }
+        }
+        minioService.deleteAll(fileIds.stream()
+                .map(UUID::toString)
+                .toList());
+        directoryRepository.deleteAllById(dirIds);
+        fileRepository.deleteAllById(fileIds);
+        
+    }
+
+
+
     /**
      * Проверяет, является ли текущий пользователь владельцем директории.
      *
@@ -140,6 +182,8 @@ public class DirectoryService extends AbstractSecuredController {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", directoryId)));
         return directoryEntity.getOwner().getUsername().equals(getUserName());
     }
+
+
 
 
 }

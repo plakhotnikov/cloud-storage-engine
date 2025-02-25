@@ -109,7 +109,7 @@ public class StorageController {
     @Operation(summary = "Удаление файла", description = "Удаляет файл по его ID")
 
     public void deleteFile(@PathVariable UUID fileId) {
-        fileService.deleteFile(fileId);
+        fileService.deleteFileById(fileId);
     }
 
 
@@ -124,5 +124,23 @@ public class StorageController {
     @Operation(summary = "Перемещение файла", description = "Перемещает файл в другую директорию")
     public FileDto moveFile(MoveFileDto moveFileDto) {
         return fileService.moveFileToDir(moveFileDto);
+    }
+
+
+    /**
+     * Удаляет директорию по её идентификатору.
+     *
+     * <p>Этот метод обрабатывает HTTP POST-запрос по пути {@code /delete-directory}.
+     * Перед выполнением операции проверяется, является ли текущий пользователь владельцем директории.
+     * В случае успешного удаления возвращается HTTP 200 OK.</p>
+     *
+     * @param id идентификатор директории, которая должна быть удалена
+     * @return {@link ResponseEntity} с кодом состояния HTTP 200 OK в случае успешного удаления
+     */
+    @PostMapping("/delete-directory")
+    @PreAuthorize("@directoryService.isDirectoryOwner(#id)")
+    public ResponseEntity<?> deleteDirectory(@RequestBody Long id) {
+        directoryService.deleteDirectoryById(id);
+        return ResponseEntity.ok().build();
     }
 }

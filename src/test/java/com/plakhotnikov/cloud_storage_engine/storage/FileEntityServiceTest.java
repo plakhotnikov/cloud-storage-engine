@@ -118,8 +118,8 @@ public class FileEntityServiceTest {
         );
         MockMultipartFile file = new MockMultipartFile("test", "test.txt", "blank/text", "hello".getBytes());
         FileDto fileDto = fileService.upload(file, directoryDto.getId());
-        fileService.deleteFile(fileDto.getId());
-        assertThrows(ResourceNotFoundException.class, () -> fileService.deleteFile(fileDto.getId()));
+        fileService.deleteFileById(fileDto.getId());
+        assertThrows(ResourceNotFoundException.class, () -> fileService.deleteFileById(fileDto.getId()));
         assertThrows(DownloadException.class, () -> fileService.downloadFile(fileDto.getId()));
     }
 }

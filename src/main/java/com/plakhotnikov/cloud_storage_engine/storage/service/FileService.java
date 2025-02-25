@@ -76,7 +76,7 @@ public class FileService extends AbstractSecuredController {
      * @throws ResourceNotFoundException если файл не найден.
      * @see MinioService#deleteFile(String)
      */
-    public void deleteFile(UUID fileId) {
+    public void deleteFileById(UUID fileId) {
         if (fileRepository.existsById(fileId)) {
             minioService.deleteFile(fileId.toString());
             fileRepository.deleteById(fileId);
