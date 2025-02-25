@@ -2,17 +2,7 @@ package com.plakhotnikov.cloud_storage_engine.storage.repository;
 
 import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.List;
-
-public interface DirectoryRepository extends JpaRepository<DirectoryEntity, Long> {
-    /**
-     * Находит корневые директории пользователя по его email.
-     *
-     * @param username Email пользователя.
-     * @return Список корневых директорий пользователя.
-     */
-    @Query("SELECT d from DirectoryEntity d WHERE d.owner.email = :username AND d.rootDirectory IS NULL")
-    List<DirectoryEntity> findRootDirectories(String username);
+public interface DirectoryRepository extends JpaRepository<DirectoryEntity, Long>, JpaSpecificationExecutor<DirectoryEntity> {
 }

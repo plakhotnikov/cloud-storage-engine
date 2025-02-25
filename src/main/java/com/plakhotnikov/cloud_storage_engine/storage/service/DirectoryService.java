@@ -4,12 +4,14 @@ import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.controller.AbstractSecuredController;
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
+import com.plakhotnikov.cloud_storage_engine.storage.DirectorySpecifications;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.DirectoryEntity;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.StorageMapper;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.CreateDirectoryDto;
 import com.plakhotnikov.cloud_storage_engine.storage.entity.dto.DirectoryDto;
 import com.plakhotnikov.cloud_storage_engine.storage.repository.DirectoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +80,28 @@ public class DirectoryService extends AbstractSecuredController {
     }
 
     /**
+     * Получает список корневых директорий, принадлежащих пользователю с указанным именем.
+     *
+     * <p>Метод использует {@link Specification} для фильтрации директорий по двум критериям:
+     * <ul>
+     *     <li>Принадлежность указанному пользователю ({@link DirectorySpecifications#hasOwnerEmail(String)})</li>
+     *     <li>Является ли директория корневой ({@link DirectorySpecifications#isRootDirectory()})</li>
+     * </ul>
+     *
+     * @param username имя пользователя (обычно email), для которого необходимо найти корневые директории
+     * @return список корневых директорий, принадлежащих указанному пользователю
+     */
+    private List<DirectoryEntity> getRootDirectories(String username) {
+        Specification<DirectoryEntity> spec = Specification
+                .where(DirectorySpecifications.hasOwnerEmail(username))
+                .and(DirectorySpecifications.isRootDirectory());
+
+        return directoryRepository.findAll(spec);
+    }
+
+
+
+    /**
      * Получает директорию по её ID.
      *
      * @param id ID директории.
@@ -90,9 +114,10 @@ public class DirectoryService extends AbstractSecuredController {
         if (id == 0) {
             DirectoryDto directoryDto = new DirectoryDto();
             directoryDto.setName("root");
-            directoryDto.setChildren(directoryRepository.findRootDirectories(getUserName()).stream()
+            var list = getRootDirectories(getUserName()).stream()
                     .map(storageMapper::dirToSubDto)
-                    .toList());
+                    .toList();
+            directoryDto.setChildren(list);
             return directoryDto;
         }
         return storageMapper.dirToDto(directoryRepository.findById(id)
