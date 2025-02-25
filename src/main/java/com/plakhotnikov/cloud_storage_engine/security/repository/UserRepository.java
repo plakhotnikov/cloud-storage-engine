@@ -1,4 +1,4 @@
-package com.plakhotnikov.cloud_storage_engine.security;
+package com.plakhotnikov.cloud_storage_engine.security.repository;
 
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

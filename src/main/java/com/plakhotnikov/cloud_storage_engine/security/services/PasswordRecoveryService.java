@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
-import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
+import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

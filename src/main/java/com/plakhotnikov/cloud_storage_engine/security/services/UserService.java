@@ -1,7 +1,7 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
 import com.plakhotnikov.cloud_storage_engine.security.UserMapper;
-import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
+import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
 import com.plakhotnikov.cloud_storage_engine.security.entity.RoleEnum;
@@ -44,7 +44,6 @@ public class UserService {
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
         UserEntity userEntityToSave = userMapper.registrationDtoToUser(userRegistrationDto);
         userEntityToSave.setPassword(passwordEncoder.encode(userEntityToSave.getPassword()));
-//        userEntityToSave.setLastResetTime(LocalDateTime.now());
         if (userRepository.existsByEmail(userEntityToSave.getEmail())) {
             throw new UsernameNotFoundException("Email " + userEntityToSave.getEmail() + " already exists");
         }

@@ -2,6 +2,7 @@ package com.plakhotnikov.cloud_storage_engine.security;
 
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserRegistrationDto;
 import com.plakhotnikov.cloud_storage_engine.security.dto.UserResponseDto;
+import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.services.TokenService;
 import com.plakhotnikov.cloud_storage_engine.security.services.UserService;
 import org.junit.jupiter.api.AfterAll;

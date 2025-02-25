@@ -1,6 +1,6 @@
 package com.plakhotnikov.cloud_storage_engine.security.services;
 
-import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
+import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;

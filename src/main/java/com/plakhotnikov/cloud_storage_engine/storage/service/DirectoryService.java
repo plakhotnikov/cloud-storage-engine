@@ -1,6 +1,6 @@
 package com.plakhotnikov.cloud_storage_engine.storage.service;
 
-import com.plakhotnikov.cloud_storage_engine.security.UserRepository;
+import com.plakhotnikov.cloud_storage_engine.security.repository.UserRepository;
 import com.plakhotnikov.cloud_storage_engine.security.controller.AbstractSecuredController;
 import com.plakhotnikov.cloud_storage_engine.security.entity.UserEntity;
 import com.plakhotnikov.cloud_storage_engine.exception.ResourceNotFoundException;
