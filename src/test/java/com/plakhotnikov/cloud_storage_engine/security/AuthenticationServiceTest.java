@@ -23,6 +23,8 @@ public class AuthenticationServiceTest {
     @Autowired
     private AuthenticationService authenticationService;
 
+
+
     public static final PostgreSQLContainer postgresContainer = new PostgreSQLContainer("postgres:latest")
             .withDatabaseName("test_db")
             .withUsername("test_user")

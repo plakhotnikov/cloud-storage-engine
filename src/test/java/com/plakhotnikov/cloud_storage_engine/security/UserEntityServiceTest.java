@@ -29,6 +29,10 @@ public class UserEntityServiceTest {
             .withDatabaseName("test_db")
             .withUsername("test_user")
             .withPassword("password");
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserMapperImpl userMapperImpl;
 
     @BeforeAll
     static void startContainer() {
@@ -79,7 +83,7 @@ public class UserEntityServiceTest {
         ));
         String token = tokenService.generateVerifyToken(email);
         userService.verifyEmail(token);
-        UserResponseDto user2 = userService.findByEmail(user.getEmail());
+        UserResponseDto user2 = userMapperImpl.userToUserResponseDto(userRepository.findByEmail(user.getEmail()).get());
         assertAll(
                 () -> assertEquals(email, user2.getEmail()),
                 () -> assertEquals(1, user2.getRoles().size())

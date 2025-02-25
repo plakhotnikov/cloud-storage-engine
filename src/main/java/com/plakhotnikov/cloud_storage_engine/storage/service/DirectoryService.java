@@ -16,6 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Сервис для управления директориями в облачном хранилище.
+ * Позволяет создавать, получать и проверять владельца директории.
+ *
+ * @see DirectoryRepository
+ * @see UserRepository
+ * @see StorageMapper
+ */
 @Service
 @RequiredArgsConstructor
 public class DirectoryService extends AbstractSecuredController {
@@ -23,6 +31,16 @@ public class DirectoryService extends AbstractSecuredController {
     private final DirectoryRepository directoryRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Создаёт новую директорию.
+     *
+     * @param createDirectoryDto DTO с данными для создания директории.
+     * @return DTO созданной директории.
+     * @throws ResourceNotFoundException если пользователь или родительская директория не найдены.
+     * @throws AccessDeniedException если пользователь не имеет доступа к созданию директории.
+     * @see CreateDirectoryDto
+     * @see DirectoryEntity
+     */
     @Transactional
     public DirectoryDto createDirectory(CreateDirectoryDto createDirectoryDto) {
 
@@ -59,6 +77,14 @@ public class DirectoryService extends AbstractSecuredController {
         return storageMapper.dirToDto(subdirectory);
     }
 
+    /**
+     * Получает директорию по её ID.
+     *
+     * @param id ID директории.
+     * @return DTO директории.
+     * @throws ResourceNotFoundException если директория не найдена.
+     * @see DirectoryDto
+     */
     @Transactional
     public DirectoryDto getDirectoryById(Long id) {
         if (id == 0) {
@@ -73,7 +99,13 @@ public class DirectoryService extends AbstractSecuredController {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("DirectoryEntity with id '%s' not found", id))));
     }
 
-
+    /**
+     * Проверяет, является ли текущий пользователь владельцем директории.
+     *
+     * @param directoryId ID директории.
+     * @return true, если пользователь владелец, иначе false.
+     * @throws ResourceNotFoundException если директория не найдена.
+     */
     @Transactional
     public boolean isDirectoryOwner(Long directoryId) {
         if (directoryId == 0) {

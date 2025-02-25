@@ -17,6 +17,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+
+/**
+ * Сервис для работы с JWT-токенами (доступа и обновления).
+ *
+ * @see JwtProperties
+ * @see UserEntity
+ * @see JwtException
+ */
 @Service
 @RequiredArgsConstructor
 public class JwtService {
@@ -24,6 +32,9 @@ public class JwtService {
     private SecretKey secretAccessKey;
     private SecretKey secretRefreshKey;
 
+    /**
+     * Инициализирует секретные ключи для подписи токенов.
+     */
     @PostConstruct
     public void init() {
         secretAccessKey = Keys.hmacShaKeyFor(jwtProperties.getACCESS_SECRET_KEY().getBytes(StandardCharsets.UTF_8));
@@ -31,7 +42,10 @@ public class JwtService {
     }
 
     /**
-     * @return generated access token
+     * Генерирует access-токен для пользователя.
+     *
+     * @param userEntity Пользователь.
+     * @return Сгенерированный access-токен.
      */
     public String generateAccessToken(UserEntity userEntity) {
         final LocalDateTime now = LocalDateTime.now();
@@ -50,8 +64,10 @@ public class JwtService {
     }
 
     /**
-     * @param userEntity
-     * @return generated refresh token
+     * Генерирует refresh-токен для пользователя.
+     *
+     * @param userEntity Пользователь.
+     * @return Сгенерированный refresh-токен.
      */
     public String generateRefreshToken(UserEntity userEntity) {
         final LocalDateTime now = LocalDateTime.now();
@@ -69,16 +85,20 @@ public class JwtService {
     }
 
     /**
-     * @param accessToken
-     * @return is accessToken valid
+     * Проверяет валидность access-токена.
+     *
+     * @param accessToken Токен доступа.
+     * @return true, если токен валиден, иначе выбрасывает исключение.
      */
     public boolean validateAccessToken(String accessToken) {
         return validateToken(accessToken, secretAccessKey);
     }
 
     /**
-     * @param refreshToken
-     * @return is refreshToken valid
+     * Проверяет валидность refresh-токена.
+     *
+     * @param refreshToken Токен обновления.
+     * @return true, если токен валиден, иначе выбрасывает исключение.
      */
     public boolean validateRefreshToken(String refreshToken) {
         return validateToken(refreshToken, secretRefreshKey);
@@ -86,9 +106,11 @@ public class JwtService {
 
 
     /**
-     * @param token
-     * @param secret
-     * @return is token valid with this key
+     * Проверяет валидность токена с использованием указанного ключа.
+     *
+     * @param token JWT-токен.
+     * @param secret Секретный ключ для проверки подписи.
+     * @return true, если токен валиден, иначе выбрасывает исключение.
      */
     private boolean validateToken(String token, SecretKey secret) {
         try {
@@ -105,8 +127,10 @@ public class JwtService {
     }
 
     /**
-     * @param token
-     * @return username
+     * Извлекает имя пользователя из access-токена.
+     *
+     * @param token JWT-токен.
+     * @return Имя пользователя.
      */
     public String getUsernameFromAccessClaims(String token) {
         return getClaims(token, secretAccessKey).getSubject();
@@ -114,8 +138,10 @@ public class JwtService {
 
 
     /**
-     * @param token
-     * @return issuedAt
+     * Получает дату выпуска access-токена.
+     *
+     * @param token JWT-токен.
+     * @return Дата выпуска токена.
      */
     public LocalDateTime getIssuedAtFromAccessClaims(String token) {
         return getClaims(token, secretAccessKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -123,25 +149,31 @@ public class JwtService {
 
 
     /**
-     * @param token
-     * @return username
+     * Извлекает имя пользователя из refresh-токена.
+     *
+     * @param token JWT-токен.
+     * @return Имя пользователя.
      */
     public String getUsernameFromRefreshClaims(String token) {
         return getClaims(token, secretRefreshKey).getSubject();
     }
 
     /**
-     * @param token
-     * @return issuedAt
+     * Получает дату выпуска refresh-токена.
+     *
+     * @param token JWT-токен.
+     * @return Дата выпуска токена.
      */
     public LocalDateTime getIssuedAtFromRefreshClaims(String token) {
         return getClaims(token, secretRefreshKey).getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     /**
-     * @param token
-     * @param secret
-     * @return claims
+     * Извлекает Claims (данные) из JWT-токена.
+     *
+     * @param token JWT-токен.
+     * @param secret Секретный ключ для подписи.
+     * @return Claims, содержащие информацию из токена.
      */
     private Claims getClaims(String token, SecretKey secret) {
         return Jwts.parser()

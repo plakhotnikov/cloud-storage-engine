@@ -7,6 +7,13 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Сервис для управления токенами верификации и сброса пароля.
+ * Хранит токены в Redis с ограниченным сроком действия.
+ *
+ * @see StringRedisTemplate
+ */
 @Service
 @RequiredArgsConstructor
 public class TokenService {
@@ -14,8 +21,10 @@ public class TokenService {
     private final long TOKEN_EXPIRATION_MINUTES = 15;
 
     /**
-     * @param email
-     * @return verifyToken
+     * Генерирует токен верификации для пользователя.
+     *
+     * @param email Email пользователя.
+     * @return Сгенерированный токен верификации.
      */
     public String generateVerifyToken(String email) {
         String token = "V:" + UUID.randomUUID();
@@ -24,16 +33,20 @@ public class TokenService {
     }
 
     /**
-     * @param token
-     * @return email from token
+     * Получает email пользователя по токену.
+     *
+     * @param token Токен верификации.
+     * @return Email, связанный с токеном.
      */
     public String getEmailByToken(String token) {
         return redisTemplate.opsForValue().get(token);
     }
 
     /**
-     * @param email
-     * @return reset password token
+     * Генерирует токен для сброса пароля.
+     *
+     * @param email Email пользователя.
+     * @return Сгенерированный токен сброса пароля.
      */
     public String generateResetPasswordToken(String email) {
         String token = "RP:" + UUID.randomUUID();
@@ -42,9 +55,10 @@ public class TokenService {
     }
 
 
-    /** Delete token
+    /**
+     * Удаляет токен из хранилища.
      *
-     * @param token
+     * @param token Токен для удаления.
      */
     public void deleteToken(String token) {
         redisTemplate.delete(token);

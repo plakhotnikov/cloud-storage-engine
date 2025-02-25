@@ -7,6 +7,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+
+/**
+ * Сервис для отправки email-сообщений пользователям.
+ * Поддерживает отправку писем для подтверждения email и сброса пароля.
+ *
+ * @see JavaMailSender
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -14,10 +21,10 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     /**
-     * send email message with link for password-change page
+     * Отправляет email с токеном для сброса пароля.
      *
-     * @param to
-     * @param token
+     * @param to Email получателя.
+     * @param token Токен сброса пароля.
      */
     public void sendResetPasswordEmail(String to, String token) {
         String subject = "Смена пароля";
@@ -29,10 +36,10 @@ public class EmailService {
     }
 
     /**
-     * send email message with link for email verify page
+     * Отправляет email с ссылкой для подтверждения регистрации.
      *
-     * @param to
-     * @param token
+     * @param to Email получателя.
+     * @param token Токен подтверждения.
      */
     public void sendVerificationEmail(String to, String token) {
         String subject = "Подтверждение регистрации";
@@ -46,11 +53,12 @@ public class EmailService {
 
 
     /**
-     * Send email message
+     * Отправляет HTML-email сообщение пользователю.
      *
-     * @param to
-     * @param subject
-     * @param content
+     * @param to Email получателя.
+     * @param subject Тема письма.
+     * @param content HTML-контент письма.
+     * @throws RuntimeException если произошла ошибка при отправке email.
      */
     private void sendHtmlEmail(String to, String subject, String content) {
         try {

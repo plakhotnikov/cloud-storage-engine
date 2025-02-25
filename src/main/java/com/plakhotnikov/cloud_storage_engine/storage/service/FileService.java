@@ -19,6 +19,14 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Сервис для управления файлами в облачном хранилище.
+ * Позволяет загружать, удалять, скачивать и перемещать файлы.
+ *
+ * @see MinioService
+ * @see FileRepository
+ * @see DirectoryRepository
+ */
 @Service
 @RequiredArgsConstructor
 public class FileService extends AbstractSecuredController {
@@ -27,6 +35,16 @@ public class FileService extends AbstractSecuredController {
     private final MinioService minioService;
     private final StorageMapper storageMapper;
 
+    /**
+     * Загружает файл в указанную директорию.
+     *
+     * @param fileToUpload Файл для загрузки.
+     * @param directoryId ID директории, в которую загружается файл.
+     * @return DTO загруженного файла.
+     * @throws ResourceNotFoundException если директория не найдена.
+     * @see FileEntity
+     * @see DirectoryEntity
+     */
     @Transactional
     public FileDto upload(MultipartFile fileToUpload, Long directoryId) {
         DirectoryEntity directoryEntity = directoryRepository.findById(directoryId)
@@ -51,6 +69,13 @@ public class FileService extends AbstractSecuredController {
         return storageMapper.fileToDto(fileEntity);
     }
 
+    /**
+     * Удаляет файл из хранилища.
+     *
+     * @param fileId ID удаляемого файла.
+     * @throws ResourceNotFoundException если файл не найден.
+     * @see MinioService#deleteFile(String)
+     */
     public void deleteFile(UUID fileId) {
         if (fileRepository.existsById(fileId)) {
             minioService.deleteFile(fileId.toString());
@@ -61,12 +86,26 @@ public class FileService extends AbstractSecuredController {
         }
     }
 
+    /**
+     * Скачивает файл по его ID.
+     *
+     * @param fileId ID файла.
+     * @return Поток данных загруженного файла.
+     * @see MinioService#download(String)
+     */
     public InputStream downloadFile(UUID fileId) {
         return minioService.download(fileId.toString());
     }
 
 
 
+    /**
+     * Проверяет, является ли пользователь владельцем файла.
+     *
+     * @param id ID файла.
+     * @return true, если пользователь является владельцем, иначе false.
+     * @throws ResourceNotFoundException если файл не найден.
+     */
     @Transactional
     public boolean isFileOwner(UUID id) {
         return fileRepository.findById(id)
@@ -74,6 +113,15 @@ public class FileService extends AbstractSecuredController {
                 .getDirectory().getOwner().getUsername().equals(this.getUserName());
     }
 
+    /**
+     * Перемещает файл в указанную директорию.
+     *
+     * @param moveFileDto DTO с информацией о перемещении файла.
+     * @return DTO обновленного файла.
+     * @throws ResourceNotFoundException если файл или директория не найдены.
+     * @see MoveFileDto
+     * @see FileEntity
+     */
     @Transactional
     public FileDto moveFileToDir(MoveFileDto moveFileDto) {
         DirectoryEntity directoryEntity = directoryRepository.findById(moveFileDto.getTargetDirectoryId())
@@ -85,6 +133,14 @@ public class FileService extends AbstractSecuredController {
         return storageMapper.fileToDto(fileEntity);
     }
 
+    /**
+     * Получает имя файла по его ID.
+     *
+     * @param id ID файла.
+     * @return Полное имя файла (имя и расширение).
+     * @throws ResourceNotFoundException если файл не найден.
+     * @see FileEntity
+     */
     public String getFileNameById(UUID id) {
         FileEntity fileEntity = fileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("fileEntity with id %s not exist", id)));

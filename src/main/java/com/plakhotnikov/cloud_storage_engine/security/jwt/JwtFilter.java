@@ -20,6 +20,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
+
+/**
+ * Фильтр для проверки JWT-токена в HTTP-запросах.
+ * Обрабатывает заголовок Authorization и устанавливает пользователя в SecurityContext.
+ *
+ * @see JwtService
+ * @see CustomUserDetailsService
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -27,6 +36,16 @@ public class JwtFilter extends OncePerRequestFilter {
     private final RequestMatcher ignoredPaths = new AntPathRequestMatcher("/auth/refresh");
     private final CustomUserDetailsService customUserDetailsService;
 
+
+    /**
+     * Фильтрует входящий HTTP-запрос, проверяя JWT-токен.
+     *
+     * @param request HTTP-запрос.
+     * @param response HTTP-ответ.
+     * @param filterChain Цепочка фильтров.
+     * @throws ServletException если произошла ошибка сервлета.
+     * @throws IOException если произошла ошибка ввода-вывода.
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -56,12 +75,18 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         catch (Exception e) {
-//            resolver.resolveException(request, response, null, e);
             throw new RuntimeException(e);
         }
 
     }
 
+
+    /**
+     * Извлекает токен из заголовка Authorization в HTTP-запросе.
+     *
+     * @param request HTTP-запрос.
+     * @return JWT-токен или null, если он отсутствует.
+     */
     private String getTokenFromRequest(HttpServletRequest request) {
         final String bearer = request.getHeader("Authorization");
         if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {

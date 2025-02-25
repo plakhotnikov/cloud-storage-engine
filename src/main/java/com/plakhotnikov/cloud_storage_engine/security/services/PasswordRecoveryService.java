@@ -9,6 +9,15 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
+/**
+ * Сервис для восстановления пароля пользователя.
+ * Позволяет сбрасывать и обновлять пароль в базе данных.
+ *
+ * @see TokenService
+ * @see UserRepository
+ * @see UserCacheService
+ */
 @Service
 @RequiredArgsConstructor
 public class PasswordRecoveryService {
@@ -18,10 +27,13 @@ public class PasswordRecoveryService {
     private final UserCacheService userCacheService;
 
 
-    /** Reset password in database
+    /**
+     * Сбрасывает пароль пользователя и обновляет его в базе данных.
      *
-     * @param token
-     * @param password
+     * @param token Токен сброса пароля.
+     * @param password Новый пароль пользователя.
+     * @throws BadCredentialsException если токен недействителен.
+     * @throws ResourceNotFoundException если пользователь не найден.
      */
     @Transactional
     public void resetPassword(String token, String password) {

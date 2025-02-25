@@ -6,13 +6,21 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
+/**
+ * Кастомный десериализатор JSON-строк, преобразующий входные данные в нижний регистр.
+ * Используется для автоматического преобразования строк в lowercase при десериализации.
+ *
+ * @see JsonDeserializer
+ */
 public class LowerCaseDeserializer extends JsonDeserializer<String> {
+
     /**
-     * @param p    Parser used for reading JSON content
-     * @param ctxt Context that can be used to access information about
-     *             this deserialization activity.
-     * @return result in lower case
-     * @throws {@link IOException}
+     * Десериализует строковое значение из JSON и преобразует его в нижний регистр.
+     *
+     * @param p    Парсер JSON, используемый для чтения содержимого.
+     * @param ctxt Контекст десериализации, предоставляющий информацию о процессе.
+     * @return Строка в нижнем регистре или null, если входное значение отсутствует.
+     * @throws IOException В случае ошибки при чтении JSON.
      */
     @Override
     public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{

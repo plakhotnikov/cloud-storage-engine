@@ -15,6 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
+
+/**
+ * Сервис для работы с MinIO, включающий загрузку, скачивание и удаление файлов.
+ *
+ * @see MinioClient
+ * @see MinioProperties
+ */
 @Service
 @RequiredArgsConstructor
 public class MinioService {
@@ -22,7 +29,15 @@ public class MinioService {
 
     private final MinioProperties minioProperties;
 
-
+    /**
+     * Скачивает файл из MinIO.
+     *
+     * @param objectName Имя объекта в хранилище.
+     * @return Поток данных загруженного файла.
+     * @throws DownloadException Если произошла ошибка при скачивании файла.
+     * @see DownloadException
+     * @see GetObjectArgs
+     */
     public InputStream download(String objectName) {
         try {
             return minioClient.getObject(
@@ -37,6 +52,14 @@ public class MinioService {
         }
     }
 
+    /**
+     * Удаляет файл из MinIO.
+     *
+     * @param objectName Имя объекта в хранилище.
+     * @throws DeleteFileException Если произошла ошибка при удалении файла.
+     * @see DeleteFileException
+     * @see RemoveObjectArgs
+     */
     public void deleteFile(String objectName) {
         try {
             minioClient.removeObject(
@@ -51,6 +74,15 @@ public class MinioService {
         }
     }
 
+    /**
+     * Загружает файл в MinIO.
+     *
+     * @param objectName Имя объекта в хранилище.
+     * @param file Файл для загрузки.
+     * @throws UploadFileException Если произошла ошибка при загрузке файла.
+     * @see UploadFileException
+     * @see PutObjectArgs
+     */
     public void upload(String objectName, MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
              minioClient.putObject(

@@ -14,8 +14,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
-
+/**
+ * Сервис для управления пользователями, включая регистрацию и верификацию.
+ *
+ * @see UserMapper
+ * @see UserRepository
+ * @see TokenService
+ * @see UserCacheService
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -26,31 +32,19 @@ public class UserService {
     private final CustomUserDetailsService customUserDetailsService;
     private final UserCacheService userCacheService;
 
-    /**
-     * Checks if user exist
-     */
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
     /**
-     * @return UserResponseDto of UserEntity with param email
-     */
-    public UserResponseDto findByEmail(String email) {
-        return  userMapper.userToUserResponseDto(userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("UserEntity not found")));
-    }
-
-
-    /**
-     * @param userRegistrationDto which contains email and password
-     * @return UserResponseDto with info about user
+     * Регистрирует нового пользователя.
+     *
+     * @param userRegistrationDto DTO с данными для регистрации пользователя.
+     * @return DTO зарегистрированного пользователя.
+     * @throws UsernameNotFoundException если email уже существует в системе.
      */
     @Transactional
     public UserResponseDto registration(@RequestParam UserRegistrationDto userRegistrationDto) {
         UserEntity userEntityToSave = userMapper.registrationDtoToUser(userRegistrationDto);
         userEntityToSave.setPassword(passwordEncoder.encode(userEntityToSave.getPassword()));
-        userEntityToSave.setLastResetTime(LocalDateTime.now());
+//        userEntityToSave.setLastResetTime(LocalDateTime.now());
         if (userRepository.existsByEmail(userEntityToSave.getEmail())) {
             throw new UsernameNotFoundException("Email " + userEntityToSave.getEmail() + " already exists");
         }
@@ -62,7 +56,12 @@ public class UserService {
 
 
     /**
-     * If token is valid, gives to user role "USER"
+     * Верифицирует email пользователя и присваивает ему роль "USER".
+     *
+     * @param token Токен верификации.
+     * @return DTO обновленного пользователя.
+     * @throws BadCredentialsException если токен недействителен.
+     * @throws UsernameNotFoundException если пользователь уже верифицирован или не существует.
      */
     @Transactional
     public UserResponseDto verifyEmail(String token) {
@@ -87,7 +86,10 @@ public class UserService {
     }
 
     /**
-     * @return check if user is verified
+     * Проверяет, верифицирован ли пользователь.
+     *
+     * @param email Email пользователя.
+     * @return true, если пользователь верифицирован, иначе false.
      */
     public boolean isVerified(String email) {
         UserEntity userEntity = (UserEntity) customUserDetailsService.loadUserByUsername(email);

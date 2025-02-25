@@ -15,8 +15,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
     /**
-     * @param email the username identifying the user whose data is required.
-     * @return UserDetails
+     * Загружает пользователя по email (если есть в кэше - берет из кэша).
+     *
+     * @param email Email пользователя.
+     * @return Детали пользователя (UserDetails).
+     * @throws UsernameNotFoundException если пользователь не найден.
      */
     @Override
     @Cacheable(key = "#email", cacheNames = "users")

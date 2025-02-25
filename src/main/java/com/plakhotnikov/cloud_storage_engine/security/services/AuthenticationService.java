@@ -17,6 +17,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
+/**
+ * Сервис для аутентификации пользователей.
+ * Обеспечивает вход в систему и обновление токенов.
+ *
+ * @see JwtService
+ * @see UserRepository
+ * @see AuthenticationManager
+ * @see UserMapper
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -27,8 +37,11 @@ public class AuthenticationService {
 
 
     /**
-     * @param userLoginDto
-     * @return UserResponseDto which contains a list of authorities, access and refresh tokens
+     * Аутентифицирует пользователя и выдает JWT-токены.
+     *
+     * @param userLoginDto DTO с учетными данными пользователя.
+     * @return DTO пользователя с токенами.
+     * @throws BadCredentialsException если учетные данные неверны.
      */
     public UserResponseDto login(@RequestParam UserLoginDto userLoginDto) {
         try {
@@ -47,8 +60,12 @@ public class AuthenticationService {
 
 
     /**
-     * @param header
-     * @return UserResponseDto which contains a list of authorities, access and refresh tokens
+     * Обновляет токены доступа на основе refresh-токена.
+     *
+     * @param header HTTP-заголовок с refresh-токеном.
+     * @return DTO пользователя с обновленными токенами.
+     * @throws BadCredentialsException если токен недействителен.
+     * @throws JwtException если refresh-токен устарел или недействителен.
      */
     public UserResponseDto refreshToken(String header) {
         if (header == null || !header.startsWith("Bearer ")) {
