@@ -40,3 +40,5 @@ out/
 ### application properties ###
 
 !**/src/main/resources/application.yaml
+/metrics/prometheus/**
+/metrics/grafana/**
