@@ -50,7 +50,10 @@ services:
     container_name: cloud-storage-s3
     volumes:
       - minio_volume:/data
-    command: server /data
+    command: server --console-address ":9090" /data
+    ports:
+      - "9998:9090"
+      - "9997:9000"
     healthcheck:
       test: [ "CMD", "mc", "alias", "set", "myminio", "http://localhost:9000", "minioadmin", "minioadmin" ]
       interval: 30s
